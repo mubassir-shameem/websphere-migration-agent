@@ -1,0 +1,18 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Project specific
+logs/
+output/
+code-ref-samples/
+.DS_Store
+
+# Portable Runtimes (Too large for git)
+apache-maven*/
+jdk-*/
+*.tar.gz

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  was2oss-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: was2oss_agent
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./output:/app/output
+      - ./sample_legacy:/app/sample_legacy
+      - ./.env:/app/.env
+    env_file:
+      - .env
+    restart: unless-stopped
