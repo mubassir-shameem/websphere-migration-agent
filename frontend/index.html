@@ -518,6 +518,57 @@
             border: 1px solid #bee5eb;
         }
     </style>
+    <style>
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-bottom: -1px;
+            border-radius: 4px 4px 0 0;
+            color: #495057;
+        }
+
+        .tab.active {
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            color: #0056b3;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #0056b3;
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 
 <body>
@@ -580,12 +631,42 @@
             <!-- Human-in-Loop Orchestrator -->
             <div class="agent-card">
                 <h3>Human-in-Loop Orchestrator</h3>
+
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('upload')">📁 Upload File</div>
+                    <div class="tab" onclick="switchTab('path')">🖥️ Server Path</div>
+                </div>
+
                 <form id="orchestrateForm">
-                    <div class="form-group">
-                        <label>WebSphere Input Path</label>
-                        <input type="text" id="webspherePath" placeholder="/path/to/websphere/files"
-                            value="/home/ec2-user/websphere-migration-platform/sample-websphere">
+                    <!-- Upload Tab -->
+                    <div id="tab-upload" class="tab-content active">
+                        <div class="form-group">
+                            <label>Upload WebSphere Project (ZIP)</label>
+                            <div class="drop-zone" id="dropZone"
+                                onclick="document.getElementById('projectUpload').click()">
+                                <p>Drag & drop ZIP file here<br>or click to browse</p>
+                                <input type="file" id="projectUpload" accept=".zip,.java" style="display: none"
+                                    onchange="handleFileUpload(this)">
+                            </div>
+                            <div id="uploadStatus" class="small text-muted" style="margin-top:5px; min-height:20px;">
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Path Tab -->
+                    <div id="tab-path" class="tab-content">
+                        <div class="form-group">
+                            <label>WebSphere Input Path</label>
+                            <input type="text" id="webspherePathInput" placeholder="/path/to/websphere/files"
+                                value="/home/ec2-user/websphere-migration-platform/sample-websphere">
+                            <small class="text-muted">Absolute path on the server/container.</small>
+                        </div>
+                    </div>
+
+                    <!-- Hidden actual input used by logic -->
+                    <input type="hidden" id="webspherePath"
+                        value="/home/ec2-user/websphere-migration-platform/sample-websphere">
+
                     <div class="form-group">
                         <label>Liberty Output Directory</label>
                         <input type="text" id="libertyOutput" placeholder="/path/to/output/directory"
@@ -645,8 +726,64 @@
             }, 5000);
         }
 
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // Handle File Upload
+        async function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = 'Uploading & Extracting... ⏳';
+            statusDiv.style.color = 'blue';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Upload failed');
+
+                const result = await response.json();
+                console.log('Upload result:', result);
+
+                // Update hidden input with the server path
+                document.getElementById('webspherePath').value = result.path;
+
+                statusDiv.innerHTML = `✅ Ready: <b>${result.filename}</b>`;
+                statusDiv.style.color = 'green';
+                showNotification('File uploaded successfully! Ready to orchestrate.', 'success');
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusDiv.innerText = '❌ Upload failed: ' + error.message;
+                statusDiv.style.color = 'red';
+            }
+        }
+
         // Initialize default source files
         function initializeDefaults() {
+            // Sync manual input
+            const pathInput = document.getElementById('webspherePathInput');
+            if (pathInput) {
+                pathInput.addEventListener('input', (e) => {
+                    document.getElementById('webspherePath').value = e.target.value;
+                });
+            }
+
             const defaultSourceFiles = {
                 "SimpleEJB.java": "/Users/shameem/amazon-q-repos/was2oss_agent/sample_legacy/SimpleEJB.java"
             };

@@ -9,6 +9,7 @@ venv/
 # Project specific
 logs/
 output/
+uploads/
 code-ref-samples/
 .DS_Store
 

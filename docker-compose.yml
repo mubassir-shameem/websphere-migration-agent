@@ -12,6 +12,7 @@ services:
       - ./logs:/app/logs
       - ./output:/app/output
       - ./sample_legacy:/app/sample_legacy
+      - ./uploads:/app/uploads
       - ./.env:/app/.env
     env_file:
       - .env

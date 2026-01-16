@@ -2,7 +2,10 @@
 import uuid
 import os
 from datetime import datetime
-from fastapi import FastAPI, BackgroundTasks, HTTPException
+import shutil
+import zipfile
+from pathlib import Path
+from fastapi import FastAPI, BackgroundTasks, HTTPException, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,7 +16,13 @@ from backend.app.workflow.orchestrator import WorkflowOrchestrator
 from backend.app.agents.transformation import TransformationAgent
 from backend.app.agents.validation import ValidationAgent
 
+from backend.app.agents.validation import ValidationAgent
+
 app = FastAPI(title="WAS to OSS Migration Agent", version="2.0")
+
+# Ensure directories exist
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
 
 # Enable CORS
 app.add_middleware(
@@ -30,7 +39,8 @@ orchestration_states = {}
 
 # Models
 class OrchestrationRequest(BaseModel):
-    input_path: str
+    websphere_input: str
+    liberty_output: Optional[str] = "migrated_open_liberty"
     max_iterations: int = 3
     
 class TransformationRequest(BaseModel):
@@ -139,7 +149,7 @@ async def start_orchestration(req: OrchestrationRequest, background_tasks: Backg
     }
     
     # Start Background Task
-    orchestrator = WorkflowOrchestrator(req.input_path, req.max_iterations)
+    orchestrator = WorkflowOrchestrator(req.websphere_input, req.max_iterations)
     background_tasks.add_task(orchestrator.run_workflow, job_id, jobs, orchestration_states)
     
     return JobResponse(job_id=job_id, status="started")
@@ -155,6 +165,41 @@ async def get_status(job_id: str):
         "progress": jobs[job_id].get("progress"),
         "state": orchestration_states.get(job_id, {})
     }
+
+@app.post("/api/v1/upload")
+async def upload_file(file: UploadFile = File(...)):
+    """Upload a source file (ZIP or Java)"""
+    try:
+        # Create unique ID for this upload
+        upload_id = str(uuid.uuid4())
+        upload_path = UPLOAD_DIR / upload_id
+        upload_path.mkdir(exist_ok=True)
+        
+        file_path = upload_path / file.filename
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        final_path = str(file_path.absolute())
+        
+        # If ZIP, extract it
+        if file.filename.endswith('.zip'):
+            extract_dir = upload_path / "extracted"
+            extract_dir.mkdir(exist_ok=True)
+            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                zip_ref.extractall(extract_dir)
+            final_path = str(extract_dir.absolute())
+            
+        return {
+            "upload_id": upload_id,
+            "filename": file.filename,
+            "path": final_path,
+            "message": "Upload successful"
+        }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 @app.get("/health")
 async def health():
