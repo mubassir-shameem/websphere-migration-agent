@@ -17,3 +17,4 @@ code-ref-samples/
 apache-maven*/
 jdk-*/
 *.tar.gz
+docs/
