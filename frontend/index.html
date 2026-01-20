@@ -1439,9 +1439,8 @@
                                     </div>
 
                                     <div class="banner-right">
-                                        <button class="btn-banner-action" id="btn-hitl-approve" style="display:none">
-                                            <i data-lucide="check"></i> Approve
-                                        </button>
+                                        <!-- HITL Actions Container -->
+                                        <div id="banner-hitl-actions" style="display: flex; gap: 8px;"></div>
                                         <button class="btn-banner-secondary" id="btn-stop"
                                             onclick="alert('Stop functionality unimplemented')">
                                             <i data-lucide="square"></i> Stop
@@ -1959,12 +1958,12 @@
                             const spinner = banner.querySelector('.spinner-ring');
                             const btnStop = document.getElementById('btn-stop');
                             const btnOutput = document.getElementById('btn-output');
-                            const btnApprove = document.getElementById('btn-hitl-approve');
+                            const hitlActions = document.getElementById('banner-hitl-actions');
 
                             // Reset Controls
                             btnStop.style.display = 'none';
                             btnOutput.style.display = 'none';
-                            btnApprove.style.display = 'none';
+                            if (hitlActions) hitlActions.innerHTML = '';
                             spinner.style.animation = 'none';
 
                             if (job.status === 'running' || job.status === 'started' || job.status === 'pending') {
@@ -1992,7 +1991,25 @@
                                 spinner.style.borderTopColor = 'var(--warning)';
                                 spinner.style.animation = 'spin 1s linear infinite';
                                 btnStop.style.display = 'block';
-                                btnApprove.style.display = 'flex';
+
+                                // Render HITL Buttons
+                                if (hitlActions) {
+                                    hitlActions.innerHTML = `
+                                        <button class="btn-banner-action" style="background: #2563eb; color: white; border: 1px solid #2563eb;" onclick="submitDecision('${job.id}', 'llm_fix')" title="Let AI Fix It">
+                                            <i data-lucide="cpu" style="width: 14px;"></i> AI Fix
+                                        </button>
+                                        <button class="btn-banner-action" style="background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1;" onclick="submitDecision('${job.id}', 'manual_fix')" title="I'll Fix Manually">
+                                            <i data-lucide="edit" style="width: 14px;"></i> Manual
+                                        </button>
+                                        <button class="btn-banner-action" style="background: #ffffff; color: #d97706; border: 1px solid #d97706;" onclick="submitDecision('${job.id}', 'skip')" title="Skip Validation">
+                                            <i data-lucide="skip-forward" style="width: 14px;"></i> Skip
+                                        </button>
+                                        <button class="btn-banner-action" style="background: #ffffff; color: #dc2626; border: 1px solid #dc2626;" onclick="submitDecision('${job.id}', 'abort')" title="Cancel Job">
+                                            <i data-lucide="x-circle" style="width: 14px;"></i> Cancel
+                                        </button>
+                                    `;
+                                    lucide.createIcons();
+                                }
                             }
                         }
 
@@ -2239,7 +2256,9 @@
                                     }
                                 }
 
-                                for (const jobId of jobIds) {
+                                // Render timeline (Process Oldest -> Newest because addJobToTimeline PREPENDS)
+                                for (let i = jobIds.length - 1; i >= 0; i--) {
+                                    const jobId = jobIds[i];
                                     const job = data.jobs[jobId];
                                     addJobToTimeline(jobId, job.status, job.created_at);
 
