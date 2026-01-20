@@ -344,3 +344,51 @@ async def health():
 
 # Mount Frontend (Dashboard)
 app.mount("/", StaticFiles(directory=str(settings.FRONTEND_DIR), html=True), name="frontend")
+
+@app.get("/api/v1/jobs/{job_id}/download")
+async def download_job_output(job_id: str):
+    """Download the migration output as a ZIP file"""
+    job = db.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+        
+    output_path = job.get('output_path')
+    if not output_path or not os.path.exists(output_path):
+         # Fallback check
+         output_path = str(settings.OUTPUT_DIR / 'migrated_open_liberty')
+         if not os.path.exists(output_path):
+            raise HTTPException(status_code=404, detail="Output directory not found")
+
+    try:
+        # Create ZIP
+        zip_base = settings.UPLOAD_DIR / f"migration_{job_id}"
+        shutil.make_archive(str(zip_base), 'zip', output_path)
+        zip_file = f"{zip_base}.zip"
+        
+        return FileResponse(
+            zip_file, 
+            media_type='application/zip', 
+            filename=f"migration_result_{job_id}.zip"
+        )
+    except Exception as e:
+        logger.error(f"Failed to zip output: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate download: {str(e)}")
+
+@app.post("/api/v1/system/open_folder")
+async def open_system_folder(req: dict):
+    """Try to open the folder in system explorer (Dev mode only)"""
+    path = req.get('path')
+    if not path or not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="Path not found")
+    
+    try:
+        if os.name == 'nt': # Windows
+            os.startfile(path)
+        elif os.uname().sysname == 'Darwin': # macOS
+            subprocess.run(['open', path])
+        else: # Linux
+            subprocess.run(['xdg-open', path])
+        return {"status": "success"}
+    except Exception as e:
+        # Don't fail hard, just return info
+        return {"status": "failed", "message": "Could not open folder (running in container?)"}

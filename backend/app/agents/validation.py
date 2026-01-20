@@ -1,5 +1,6 @@
 
 import os
+import shutil
 import subprocess
 import logging
 import json
@@ -98,35 +99,18 @@ class ValidationAgent:
         if not os.path.exists(os.path.join(self.project_dir, 'pom.xml')):
             return {'status': 'failed', 'error': 'pom.xml not found'}
             
-        # Check if Maven is available (Local first, then system)
-        local_mvn = os.path.abspath(os.path.join(os.path.dirname(self.project_dir), '..', 'apache-maven-3.9.6', 'bin', 'mvn'))
+        # Sustainable Architecture: Use System Environment (PATH)
+        # We expect 'mvn' and 'java' to be available in the environment (or container)
         mvn_cmd = 'mvn'
         
-        if os.path.exists(local_mvn):
-            self.logger.info(f"Using local Maven: {local_mvn}")
-            mvn_cmd = local_mvn
-        else:
-            try:
-                check_mvn = subprocess.run(['which', 'mvn'], capture_output=True, text=True, timeout=5)
-                if check_mvn.returncode != 0:
-                    return {'status': 'skipped', 'message': 'Maven not installed'}
-            except Exception:
-                return {'status': 'skipped', 'message': 'Maven check failed'}
+        # Verify Maven exists
+        if not shutil.which(mvn_cmd):
+            return {'status': 'skipped', 'message': 'Maven (mvn) not found in PATH. Please install Maven.'}
             
         try:
-            # Setup environment with local JDK if available
+            # Inherit system environment (Respects user's JAVA_HOME and PATH)
             env = os.environ.copy()
-            
-            # Check for local JDK (macOS structure) - Corrected path
-            # self.project_dir is .../output/migrated_open_liberty
-            # dirname is .../output
-            # .. is .../was2oss_agent (Root)
-            local_jdk = os.path.abspath(os.path.join(os.path.dirname(self.project_dir), '..', 'jdk-17.0.9+9', 'Contents', 'Home'))
-            
-            if os.path.exists(local_jdk):
-                self.logger.info(f"Using local JDK: {local_jdk}")
-                env['JAVA_HOME'] = local_jdk
-                env['PATH'] = f"{local_jdk}/bin:{env.get('PATH', '')}"
+            self.logger.info(f"Running Maven Build using system tools in {self.project_dir}")
             
             # ensure we run in the project dir
             res = subprocess.run(
@@ -134,7 +118,7 @@ class ValidationAgent:
                 cwd=self.project_dir,
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=settings.MAVEN_BUILD_TIMEOUT,
                 env=env
             )
             

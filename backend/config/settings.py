@@ -26,6 +26,9 @@ class Settings:
     # default LLM
     DEFAULT_LLM_PROVIDER = "claude"
 
+    # Build Configuration
+    MAVEN_BUILD_TIMEOUT = int(os.getenv("MAVEN_BUILD_TIMEOUT", "900")) # 15 minutes default
+
     def __init__(self):
         # Ensure directories exist
         self.LOG_DIR.mkdir(exist_ok=True, parents=True)

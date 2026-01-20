@@ -1447,8 +1447,8 @@
                                         </button>
                                         <button class="btn-banner-action" id="btn-output"
                                             style="display:none; background: var(--success);"
-                                            onclick="alert('Opening output directory...')">
-                                            <i data-lucide="external-link"></i> Output
+                                            onclick="downloadOutput()">
+                                            <i data-lucide="download"></i> Download
                                         </button>
                                     </div>
                                 </div>
@@ -2170,6 +2170,20 @@
 
                             logsContainer.innerHTML = logs;
                             logsContainer.scrollTop = logsContainer.scrollHeight;
+                        }
+
+                        function downloadOutput() {
+                            // Logic: Download the latest job shown in the timeline (Banner Job)
+                            const timeline = document.getElementById('timeline');
+                            if (timeline && timeline.firstChild) {
+                                const idStr = timeline.firstChild.id; // job-UUID
+                                if (idStr) {
+                                    const jobId = idStr.replace('job-', '');
+                                    window.location.href = `${API_BASE}/api/v1/jobs/${jobId}/download`;
+                                    return;
+                                }
+                            }
+                            alert("No job selected");
                         }
 
                         function showHITLPanel(jobId, job) {
