@@ -171,30 +171,120 @@ class TransformationAgent:
             
         return results
 
-    def generate_pom(self, llm_provider):
-        prompt = """Generate a Maven pom.xml for Open Liberty with Jakarta EE 8 compatibility:
-
-CRITICAL REQUIREMENTS:
-1. Use Jakarta EE 8 dependencies (which still use javax.* packages)
-2. Include proper MicroProfile dependencies
-3. Ensure all dependencies are compatible with javax.* imports
-
-PROJECT DETAILS:
-- groupId: com.company
-- artifactId: customer-portal-liberty
-- version: 1.0.0
-- packaging: war
-
-DEPENDENCIES NEEDED:
-- Jakarta EE 8 Web Profile (javax.* packages)
-- MicroProfile 4.1
-- JUnit 5 for testing
-
-OUTPUT: Return ONLY the complete pom.xml content, no explanations."""
-        res = self.call_llm(prompt, llm_provider)
-        if res:
-             return res.replace("```xml", "").replace("```", "").strip()
-        return None
+    def generate_pom(self, llm_provider=None):
+        """Generate a deterministic Maven pom.xml for Open Liberty with Java EE 8 (javax.*)
+        
+        CRITICAL: Uses Java EE 8 dependencies (javax.* namespace) NOT Jakarta EE 9+ (jakarta.*)
+        This ensures compatibility with transformed WebSphere code that uses javax.servlet imports.
+        """
+        return """<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.company</groupId>
+    <artifactId>customer-portal-liberty</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+    <name>Customer Portal - Open Liberty</name>
+    
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+    </properties>
+    
+    <dependencies>
+        <!-- Java EE 8 Web Profile (javax.* namespace) - NOT Jakarta! -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Jakarta Persistence API (still uses javax.persistence) -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <finalName>customer-portal-liberty</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>io.openliberty.tools</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <version>3.8.2</version>
+                <configuration>
+                    <serverName>defaultServer</serverName>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+"""
 
     def _create_dir_structure(self):
         dirs = [

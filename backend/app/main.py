@@ -19,6 +19,25 @@ from backend.app.agents.validation import ValidationAgent
 
 from backend.app.agents.validation import ValidationAgent
 
+# Setup file logging
+import logging
+from pathlib import Path
+
+LOG_DIR = Path("backend/logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_DIR / "app.log"),
+        logging.StreamHandler()  # Also log to console
+    ]
+)
+
+logger = logging.getLogger(__name__)
+logger.info("WebSphere Migration Agent starting...")
+
 app = FastAPI(title="WAS to OSS Migration Agent", version="2.0")
 
 # Ensure directories exist
@@ -147,6 +166,7 @@ async def start_orchestration(req: OrchestrationRequest, background_tasks: Backg
     
     # Initialize job with default values
     db.update_job(job_id,
+        status='running',  # Set to running when starting workflow
         progress='Initializing migration workflow...',
         metrics={
             'files_discovered': 0,
@@ -237,20 +257,85 @@ async def submit_decision(job_id: str, req: DecisionRequest, background_tasks: B
         )
         output_dir = job.get('output_path', 'output/migrated_open_liberty')
         return {
-            "status": "waiting_manual_fix",
-            "message": f"Please fix files in: {output_dir}",
-            "output_dir": output_dir
+            "status": "waiting_manual_fix", 
+            "message": "Waiting for manual fixes",
+            "output_path": output_dir
         }
     
     elif decision == 'llm_fix':
+        # Resume workflow with LLM retry
         db.update_job(job_id,
             status='running',
-            progress='Retrying with LLM feedback...'
+            progress='Retrying with LLM fix...'
         )
-        return {"status": "retrying", "message": "LLM fix initiated"}
-    
-    else:
+        
+        # Get job config
+        config = job.get('config', {})
+        
+        # Re-run orchestration workflow
+        orchestrator = WorkflowOrchestrator(
+            input_dir=config.get('websphere_input'),
+            max_iterations=config.get('max_iterations', 3)
+        )
+        
+        # Run workflow in background
+        background_tasks.add_task(orchestrator.run_workflow, job_id, db)
+        
+        return {
+            "status": "retrying",
+            "message": "Workflow resuming with LLM fix"
+        }
         raise HTTPException(status_code=400, detail="Invalid decision")
+
+
+@app.get("/api/v1/system/logs")
+async def get_system_logs(lines: int = 100):
+    """Return recent backend logs for debugging and monitoring"""
+    from pathlib import Path
+    
+    # Try multiple log locations
+    log_paths = [
+        Path("backend/logs/app.log"),
+        Path("logs/app.log"),
+        Path("app.log")
+    ]
+    
+    log_file = None
+    for path in log_paths:
+        if path.exists():
+            log_file = path
+            break
+    
+    if not log_file:
+        # Return helpful message if no log file exists
+        return {
+            "logs": [
+                "[INFO] No log file found - application may be logging to console only",
+                "[INFO] Check terminal/console output for system logs",
+                "[INFO] Log file locations checked:",
+                *[f"  - {path}" for path in log_paths]
+            ],
+            "total_lines": 0,
+            "log_file": None
+        }
+    
+    try:
+        with open(log_file, 'r') as f:
+            all_lines = f.readlines()
+            # Get last N lines
+            recent = all_lines[-lines:] if len(all_lines) > lines else all_lines
+        
+        return {
+            "logs": [line.rstrip('\n') for line in recent],
+            "total_lines": len(all_lines),
+            "log_file": str(log_file)
+        }
+    except Exception as e:
+        return {
+            "logs": [f"[ERROR] Failed to read log file: {str(e)}"],
+            "total_lines": 0,
+            "error": str(e)
+        }
 
 
 @app.get("/health")
