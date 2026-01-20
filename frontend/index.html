@@ -79,44 +79,33 @@
            SIDEBAR NAVIGATION
            ============================================ */
 
+        .app-body {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 64px);
+            /* Subtract header height */
+            overflow: hidden;
+        }
+
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100vh;
             width: 260px;
+            height: 100%;
             padding: 20px 0;
             transition: width 0.3s ease;
             overflow-y: auto;
             overflow-x: hidden;
-            z-index: 100;
-            /* Solid background instead of glass - HubSpot style */
+            /* Revert to theme background as requested */
             background: var(--bg-surface);
             border-right: 1px solid var(--border-panel);
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar.collapsed {
             width: 70px;
         }
 
-        .sidebar-header {
-            padding: 0 20px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .sidebar.collapsed .sidebar-logo span {
-            display: none;
-        }
+        /* Sidebar header removed for HubSpot layout */
 
         .sidebar-toggle {
             background: transparent;
@@ -133,9 +122,7 @@
         }
 
         .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
+            margin-top: auto;
             width: 100%;
             padding: 16px;
             border-top: 1px solid var(--border-panel);
@@ -167,28 +154,21 @@
             border: none;
             background: transparent;
             width: 100%;
+            margin-bottom: 20px;
+            /* Increased spacing as requested */
             text-align: left;
             position: relative;
         }
 
-        /* Icon containers with glassmorphism */
-        .nav-item i {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .nav-item i svg {
+        /* Icon containers */
+        /* Standard subtle icons */
+        .nav-item svg {
             width: 20px;
             height: 20px;
-            stroke-width: 1.8px;
+            stroke-width: 2px;
+            transition: all 0.2s ease;
+            margin-right: 12px;
+            color: var(--text-secondary);
         }
 
         .nav-item:hover {
@@ -196,9 +176,9 @@
             color: var(--text-primary);
         }
 
-        .nav-item:hover i {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
+        .nav-item:hover svg {
+            color: var(--text-primary);
+            transform: translateX(2px);
         }
 
         .nav-item.active {
@@ -206,9 +186,8 @@
             color: var(--text-primary);
         }
 
-        .nav-item.active i {
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        .nav-item.active svg {
+            color: var(--text-primary);
         }
 
         .nav-item.active::before {
@@ -229,8 +208,8 @@
             font-weight: 600;
         }
 
-        .nav-item.primary i {
-            background: rgba(0, 0, 0, 0.15);
+        .nav-item.primary svg {
+            color: var(--bg-body);
         }
 
         .nav-item.primary:hover {
@@ -247,9 +226,10 @@
             padding: 10px;
         }
 
-        .sidebar.collapsed .nav-item i {
-            width: 40px;
-            height: 40px;
+        .sidebar.collapsed .nav-item svg {
+            margin-right: 0;
+            width: 24px;
+            height: 24px;
         }
 
         .badge {
@@ -323,17 +303,21 @@
 
         .app-container {
             display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .main-content {
-            margin-left: 260px;
             flex: 1;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
+            overflow-y: auto;
+            height: 100%;
+            padding: 0;
         }
 
-        .sidebar.collapsed~.main-content {
-            margin-left: 70px;
+        /* Sidebar collapsed handled by flex width transition */
+        .sidebar.collapsed {
+            width: 70px;
         }
 
         /* Content sections for continuous scroll */
@@ -353,21 +337,23 @@
            ============================================ */
 
         .header {
-            padding: 24px;
-            margin-bottom: 24px;
+            height: 64px;
+            padding: 0 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* No glass effect - blends with content */
+            background: var(--bg-surface);
             border-bottom: 1px solid var(--border-panel);
+            flex-shrink: 0;
+            z-index: 10;
         }
 
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
+        .header-logo {
             display: flex;
             align-items: center;
             gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .theme-toggle {
@@ -391,15 +377,460 @@
            START MIGRATION CARD
            ============================================ */
 
-        .start-card {
-            padding: 24px;
+        /* ============================================
+           MIGRATION COMMAND BAR
+           ============================================ */
+
+        .migration-control-panel {
             margin-bottom: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .start-card h2 {
-            font-size: 18px;
+        .control-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-panel);
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Group: Source Selection */
+        .source-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 2;
+            min-width: 0;
+        }
+
+        .source-toggle {
+            display: flex;
+            /* Fix for Dark Mode visibility */
+            background: var(--bg-surface-secondary, rgba(255, 255, 255, 0.05));
+            border: 1px solid var(--border-panel);
+            padding: 2px;
+            border-radius: 8px;
+            gap: 2px;
+            height: 40px;
+            /* Enforce alignment */
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .source-toggle button {
+            border: none;
+            background: transparent;
+            padding: 0 12px;
+            height: 100%;
+            /* Full height of container */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .source-toggle button.active {
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .mini-drop-zone {
+            flex: 1;
+            height: 40px;
+            /* Enforce alignment */
+            border: 1px dashed var(--border-panel);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .mini-drop-zone:hover {
+            border-color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mini-drop-zone span {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        /* Group: Settings */
+        .settings-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-left: 12px;
+            border-left: 1px solid var(--border-panel);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 0 10px;
+            border-radius: 8px;
+            height: 40px;
+        }
+
+        .setting-item input {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .setting-item input:focus {
+            outline: none;
+        }
+
+        .setting-item.wide input {
+            width: 180px;
+        }
+
+        .setting-item.narrow input {
+            width: 40px;
+        }
+
+        /* Group: Action */
+        .btn-start {
+            height: 40px;
+            padding: 0 24px;
+            background: var(--text-primary);
+            color: var(--bg-body);
+            border: none;
+            border-radius: 8px;
             font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-start:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Status Bar */
+        /* ============================================
+           ACTIVITY BANNER (RICH STATUS)
+           ============================================ */
+        .activity-banner {
+            margin-top: 16px;
+            background: white;
+            border: 1px solid var(--border-panel);
+            border-left: 4px solid var(--info);
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            /* Stack rows vertically */
+            gap: 16px;
+            /* Space between rows */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        /* Row 1: Status on left, Actions on right */
+        .banner-row-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Row 2: Stepper centered */
+        .banner-row-bottom {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-panel);
+        }
+
+        .activity-banner.hidden {
+            display: none;
+        }
+
+        /* Running Blue */
+        .activity-banner.status-running {
+            border-left: 4px solid var(--info);
+        }
+
+        /* Success Green */
+        .activity-banner.status-success {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Error Red */
+        .activity-banner.status-error {
+            border-left: 4px solid var(--error);
+        }
+
+        /* HITL Amber */
+        .activity-banner.status-hitl {
+            border-left: 4px solid var(--warning);
+            background: #fffbf0;
+        }
+
+        /* Left: Status */
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 1;
+            /* Above stepper if overlap */
+        }
+
+        .status-icon-wrapper {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Animated Spinner Ring */
+        .spinner-ring {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--info);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .banner-text h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 2px 0;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .banner-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+            white-space: nowrap;
+            /* Prevent wrapping */
+        }
+
+        /* Middle: Stepper (Now uses banner-row-bottom for centering) */
+        .banner-middle {
+            display: flex;
+            justify-content: center;
+        }
+
+        .stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .step {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step i {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Active: Blue Pulse */
+        .step.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Completed: Green Solid */
+        .step.completed {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Failed: Red */
+        .step.failed {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* HITL: Amber */
+        .step.hitl {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        /* Pending: Grey */
+        .step.pending {
+            opacity: 0.6;
+            color: var(--text-secondary);
+        }
+
+        .step-line {
+            height: 2px;
+            width: 20px;
+            /* Reduced from 40px for compactness */
+            background: var(--border-panel);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .step-line.active {
+            background: var(--success);
+        }
+
+        .step-line.failed {
+            background: var(--error);
+        }
+
+        /* Mobile Responsive: Stack banner elements vertically */
+        @media (max-width: 768px) {
+            .activity-banner {
+                flex-direction: column;
+                padding: 16px;
+                gap: 16px;
+            }
+
+            .banner-middle {
+                position: static;
+                transform: none;
+            }
+
+            .banner-left,
+            .banner-right {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+
+        /* Right: Actions */
+        .banner-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            /* Align right */
+            gap: 12px;
+            z-index: 1;
+            /* Above stepper if overlap */
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .cursor-pointer:hover {
+            opacity: 0.8;
+            transform: translateY(-1px);
+        }
+
+        .btn-banner-action {
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-banner-secondary {
+            background: transparent;
+            border: 1px solid var(--border-panel);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-banner-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-banner-secondary:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .status-bar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-panel);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .status-bar.hidden {
+            display: none;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
         }
 
         .tabs {
@@ -883,269 +1314,308 @@
 
 <body>
     <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
+        <!-- Global Header (Full Width) -->
+        <header class="header">
+            <div class="header-left">
+                <div class="header-logo">
                     <i data-lucide="zap"></i>
-                    <span>Migration Agent</span>
+                    <span>WebSphere Migration Agent</span>
                 </div>
             </div>
-
-            <nav class="sidebar-nav">
-                <button class="nav-item primary" id="nav-start" onclick="scrollToSection('start')">
-                    <i data-lucide="play-circle"></i>
-                    <span>Start New</span>
-                </button>
-
-                <button class="nav-item active" id="nav-history" onclick="scrollToSection('history')">
-                    <i data-lucide="bar-chart-2"></i>
-                    <span>History</span>
-                    <span class="badge" id="job-count">0</span>
-                </button>
-
-                <button class="nav-item" id="nav-logs" onclick="scrollToSection('logs')">
-                    <i data-lucide="terminal"></i>
-                    <span>System Logs</span>
-                </button>
-            </nav>
-
-            <div class="sidebar-section">
-                <h3>Recent Jobs</h3>
-                <div class="job-list-sidebar" id="recentJobsList">
-                    <div style="padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px;">
-                        No jobs yet
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toggle at bottom (HubSpot pattern) -->
-            <div class="sidebar-footer">
-                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
-                    <i data-lucide="chevrons-left" id="sidebar-toggle-icon"></i>
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i data-lucide="sun" id="theme-icon"></i>
+                    <span id="theme-text">Dark</span>
                 </button>
             </div>
-        </aside>
+        </header>
 
-        <main class="main-content">
-            <div class="container">
-
-                <!-- Header -->
-                <header class="header">
-                    <h1>
-                        <i data-lucide="zap"></i>
-                        WebSphere Migration Agent
-                    </h1>
-                    <button class="theme-toggle" onclick="toggleTheme()">
-                        <i data-lucide="sun" id="theme-icon"></i>
-                        <span id="theme-text">Dark</span>
+        <div class="app-body">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar" id="sidebar">
+                <!-- No sidebar header - logo moved to global header -->
+                <nav class="sidebar-nav">
+                    <button class="nav-item primary" id="nav-start" onclick="scrollToSection('start')">
+                        <i data-lucide="play-circle"></i>
+                        <span>Start New</span>
                     </button>
-                </header>
 
-                <!-- Sections Container (Continuous Scroll) -->
-                <section class="content-section" id="section-start">
-                    <!-- Start Migration Card -->
-                    <div class="start-card glass-panel">
-                        <h2>Start New Migration</h2>
+                    <button class="nav-item active" id="nav-history" onclick="scrollToSection('history')">
+                        <i data-lucide="bar-chart-2"></i>
+                        <span>History</span>
+                        <span class="badge" id="job-count">0</span>
+                    </button>
 
-                        <div class="tabs">
-                            <div class="tab active" onclick="switchTab('upload')">
-                                Upload ZIP
-                            </div>
-                            <div class="tab" onclick="switchTab('path')">
-                                Server Path
-                            </div>
-                        </div>
+                    <button class="nav-item" id="nav-logs" onclick="scrollToSection('logs')">
+                        <i data-lucide="terminal"></i>
+                        <span>System Logs</span>
+                    </button>
+                </nav>
 
-                        <div id="tab-upload" class="tab-content active">
-                            <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                                <input type="file" id="fileInput" accept=".zip" style="display: none"
-                                    onchange="handleFile(this)">
-                                <p>Drag & drop ZIP file here<br>or click to browse</p>
-                            </div>
-                            <div id="upload-status"
-                                style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
-                            </div>
-                        </div>
-
-                        <div id="tab-path" class="tab-content">
-                            <div class="form-group">
-                                <label>WebSphere Input Path</label>
-                                <input type="text" id="inputPath" placeholder="/path/to/websphere/project"
-                                    value="/Users/shameem/amazon-q-repos/was2oss_agent/sample_legacy">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Output Directory</label>
-                                <input type="text" id="outputDir" value="migrated_open_liberty">
-                            </div>
-                            <div class="form-group">
-                                <label>Max Iterations</label>
-                                <select id="maxIterations">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3" selected>3</option>
-                                    <option value="5">5</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="startMigration()">
-                            <i data-lucide="play-circle"></i>
-                            Start Migration
-                        </button>
-                    </div>
-
-                </section>
-
-                <section class="content-section" id="section-history">
-                    <!-- Migration History Timeline -->
-                    <div class="timeline-section">
-                        <h2>Migration History</h2>
-                        <div id="timeline" class="timeline">
-                            <div class="empty-state">
-                                <i data-lucide="inbox"></i>
-                                <p>No migrations yet. Start your first migration above!</p>
-                            </div>
+                <div class="sidebar-section">
+                    <h3>Recent Jobs</h3>
+                    <div class="job-list-sidebar" id="recentJobsList">
+                        <div style="padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px;">
+                            No jobs yet
                         </div>
                     </div>
-                </section>
+                </div>
 
-                <!-- System Logs Section -->
-                <section class="content-section" id="section-logs">
-                    <div class="glass-panel" style="padding: 24px;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-                            <h2 style="font-size: 18px; font-weight: 600;">System Logs</h2>
-                            <div style="display: flex; gap: 12px;">
-                                <button class="btn btn-secondary" onclick="copyLogsToClipboard()"
-                                    title="Copy logs to clipboard">
-                                    <i data-lucide="copy"></i>
-                                    Copy
+                <!-- Toggle at bottom (HubSpot pattern) -->
+                <div class="sidebar-footer">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+                        <i data-lucide="chevrons-left" id="sidebar-toggle-icon"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <div class="container">
+
+                    <!-- Header -->
+                    <!-- Sections Container (Continuous Scroll) -->
+                    <section class="content-section" id="section-start">
+
+                        <div class="migration-control-panel">
+                            <!-- ROW 1: CONTROLS -->
+                            <div class="control-bar">
+                                <!-- Source Selection -->
+                                <div class="source-group">
+                                    <div class="source-toggle">
+                                        <button class="tab active" onclick="switchTab('upload')">ZIP</button>
+                                        <button class="tab" onclick="switchTab('path')">Path</button>
+                                    </div>
+
+                                    <!-- Upload Input Container (Active by default) -->
+                                    <div id="tab-upload" class="tab-content active" style="flex: 1;">
+                                        <div class="mini-drop-zone" id="dropZone"
+                                            onclick="document.getElementById('fileInput').click()"
+                                            title="Drag ZIP or Click to Browse">
+                                            <i data-lucide="upload-cloud"></i>
+                                            <span id="upload-status" class="placeholder">Drag ZIP or Click to
+                                                Browse</span>
+                                            <input type="file" id="fileInput" hidden onchange="handleFile(this)">
+                                        </div>
+                                    </div>
+
+                                    <!-- Server Path Input Container -->
+                                    <div id="tab-path" class="tab-content" style="flex: 1;">
+                                        <input type="text" id="inputPath"
+                                            placeholder="/opt/ibm/wlp/usr/servers/defaultServer"
+                                            style="width: 100%; height: 40px; border: 1px solid var(--border-panel); border-radius: 8px; padding: 0 12px; background: transparent; color: var(--text-primary); outline: none;">
+                                    </div>
+                                </div>
+
+                                <!-- Settings -->
+                                <div class="settings-group">
+                                    <div class="setting-item wide" title="Output Directory">
+                                        <i data-lucide="folder"></i>
+                                        <input type="text" id="outputDir" value="migrated_open_liberty">
+                                    </div>
+                                    <div class="setting-item narrow" title="Max Iterations">
+                                        <i data-lucide="repeat"></i>
+                                        <input type="number" id="maxIterations" value="3" min="1" max="10">
+                                    </div>
+                                </div>
+
+                                <!-- Start Button -->
+                                <button class="btn-start" onclick="startMigration()">
+                                    <i data-lucide="play-circle"></i> Start
                                 </button>
-                                <button class="btn btn-secondary" onclick="fetchSystemLogs()">
-                                    <i data-lucide="refresh-cw"></i>
-                                    Refresh
-                                </button>
+                            </div> <!-- END .control-bar (Separated) -->
+
+                            <!-- ROW 2: ACTIVE STATUS (Separated Container) -->
+                            <div class="activity-banner hidden" id="activity-banner" style="margin-top: 20px;">
+                                <!-- Row 1: Status + Actions -->
+                                <div class="banner-row-top">
+                                    <div class="banner-left">
+                                        <div class="status-icon-wrapper">
+                                            <div class="spinner-ring"></div>
+                                        </div>
+                                        <div class="banner-text">
+                                            <h3 id="banner-title">Migration Running</h3>
+                                            <p id="banner-subtitle">Initializing...</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="banner-right">
+                                        <button class="btn-banner-action" id="btn-hitl-approve" style="display:none">
+                                            <i data-lucide="check"></i> Approve
+                                        </button>
+                                        <button class="btn-banner-secondary" id="btn-stop"
+                                            onclick="alert('Stop functionality unimplemented')">
+                                            <i data-lucide="square"></i> Stop
+                                        </button>
+                                        <button class="btn-banner-action" id="btn-output"
+                                            style="display:none; background: var(--success);"
+                                            onclick="alert('Opening output directory...')">
+                                            <i data-lucide="external-link"></i> Output
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Stepper (Full Width, Centered) -->
+                                <div class="banner-row-bottom">
+                                    <div class="banner-middle">
+                                        <div class="stepper">
+                                            <div class="step" id="step-discovery">Discovery</div>
+                                            <div class="step-line"></div>
+                                            <div class="step" id="step-transform">Transform</div>
+                                            <div class="step-line"></div>
+                                            <div class="step" id="step-verify">Verify</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                    </section>
+
+                    <section class="content-section" id="section-history">
+                        <!-- Migration History Timeline -->
+                        <div class="timeline-section">
+                            <h2>Migration History</h2>
+                            <div id="timeline" class="timeline">
+                                <div class="empty-state">
+                                    <i data-lucide="inbox"></i>
+                                    <p>No migrations yet. Start your first migration above!</p>
+                                </div>
                             </div>
                         </div>
-                        <div id="systemLogsContent" class="log-console visible" style="min-height: 400px;">
-                            <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
-                                Click Refresh to load logs
+                    </section>
+
+                    <!-- System Logs Section -->
+                    <section class="content-section" id="section-logs">
+                        <div class="glass-panel" style="padding: 24px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                                <h2 style="font-size: 18px; font-weight: 600;">System Logs</h2>
+                                <div style="display: flex; gap: 12px;">
+                                    <button class="btn btn-secondary" onclick="copyLogsToClipboard()"
+                                        title="Copy logs to clipboard">
+                                        <i data-lucide="copy"></i>
+                                        Copy
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="fetchSystemLogs()">
+                                        <i data-lucide="refresh-cw"></i>
+                                        Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="systemLogsContent" class="log-console visible" style="min-height: 400px;">
+                                <div style="padding: 20px; text-align: center; color: var(--text-secondary);">
+                                    Click Refresh to load logs
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <script>
-                    // ============================================
-                    // GLOBAL CONFIGURATION
-                    // ============================================
+                    <script>
+                        // ============================================
+                        // GLOBAL CONFIGURATION
+                        // ============================================
 
-                    const API_BASE = `http://${window.location.hostname}:8000`;
-                    let activeJobs = new Set();
-                    let pollInterval = null;
-                    let currentUploadPath = null;
+                        const API_BASE = `http://${window.location.hostname}:8000`;
+                        let activeJobs = new Set();
+                        let pollInterval = null;
+                        let currentUploadPath = null;
 
-                    // ============================================
-                    // SIDEBAR & VIEW ROUTING
-                    // ============================================
+                        // ============================================
+                        // SIDEBAR & VIEW ROUTING
+                        // ============================================
 
-                    let currentView = 'history';
+                        let currentView = 'history';
 
-                    function toggleSidebar() {
-                        const sidebar = document.getElementById('sidebar');
-                        const icon = document.getElementById('sidebar-toggle-icon');
+                        function toggleSidebar() {
+                            const sidebar = document.getElementById('sidebar');
+                            const icon = document.getElementById('sidebar-toggle-icon');
 
-                        sidebar.classList.toggle('collapsed');
+                            sidebar.classList.toggle('collapsed');
 
-                        // Change icon based on state
-                        if (sidebar.classList.contains('collapsed')) {
-                            icon.setAttribute('data-lucide', 'chevrons-right');  // Expand →
-                        } else {
-                            icon.setAttribute('data-lucide', 'chevrons-left');   // Collapse ←
-                        }
-
-                        lucide.createIcons();
-                        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-                    }
-
-                    // Initialize sidebar state
-                    const savedSidebarState = localStorage.getItem('sidebarCollapsed');
-                    if (savedSidebarState === 'true') {
-                        const sidebar = document.getElementById('sidebar');
-                        const icon = document.getElementById('sidebar-toggle-icon');
-                        sidebar.classList.add('collapsed');
-                        if (icon) {
-                            icon.setAttribute('data-lucide', 'chevrons-right');
-                            lucide.createIcons();
-                        }
-                    }
-
-                    function scrollToSection(sectionId) {
-                        const section = document.getElementById(`section-${sectionId}`);
-                        if (section) {
-                            section.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-
-                        // Update navigation active state
-                        updateActiveNav(sectionId);
-
-                        // Special handling for logs
-                        if (sectionId === 'logs') {
-                            fetchSystemLogs();
-                        }
-
-                        currentView = sectionId;
-                    }
-
-                    function updateActiveNav(sectionId) {
-                        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-                        const navItem = document.getElementById(`nav-${sectionId}`);
-                        if (navItem) {
-                            navItem.classList.add('active');
-                        }
-                    }
-
-                    // Scroll spy - update nav based on scroll position
-                    window.addEventListener('scroll', () => {
-                        const sections = document.querySelectorAll('.content-section');
-                        const scrollPos = window.scrollY + 150;
-
-                        sections.forEach(section => {
-                            const top = section.offsetTop;
-                            const height = section.offsetHeight;
-                            const id = section.getAttribute('id');
-
-                            if (scrollPos >= top && scrollPos < top + height) {
-                                const sectionName = id.replace('section-', '');
-                                updateActiveNav(sectionName);
+                            // Change icon based on state
+                            if (sidebar.classList.contains('collapsed')) {
+                                icon.setAttribute('data-lucide', 'chevrons-right');  // Expand →
+                            } else {
+                                icon.setAttribute('data-lucide', 'chevrons-left');   // Collapse ←
                             }
-                        });
-                    });
 
-                    function updateRecentJobsList(jobs) {
-                        const container = document.getElementById('recentJobsList');
-                        if (!container) return;
-
-                        if (!jobs || jobs.length === 0) {
-                            container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px;">No jobs yet</div>';
-                            return;
+                            lucide.createIcons();
+                            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
                         }
 
-                        const html = jobs.slice(0, 10).map(job => {
-                            const statusIcon = job.status === 'completed' || job.status === 'success' ? 'check-circle' :
-                                (job.status === 'failed' || job.status === 'error' ? 'x-circle' :
-                                    (job.status === 'running' ? 'loader' : 'clock'));
+                        // Initialize sidebar state
+                        const savedSidebarState = localStorage.getItem('sidebarCollapsed');
+                        if (savedSidebarState === 'true') {
+                            const sidebar = document.getElementById('sidebar');
+                            const icon = document.getElementById('sidebar-toggle-icon');
+                            sidebar.classList.add('collapsed');
+                            if (icon) {
+                                icon.setAttribute('data-lucide', 'chevrons-right');
+                                lucide.createIcons();
+                            }
+                        }
 
-                            const timeAgo = getTimeAgo(job.created_at);
+                        function scrollToSection(sectionId) {
+                            const section = document.getElementById(`section-${sectionId}`);
+                            if (section) {
+                                section.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
 
-                            return `
+                            // Update navigation active state
+                            updateActiveNav(sectionId);
+
+                            // Special handling for logs
+                            if (sectionId === 'logs') {
+                                fetchSystemLogs();
+                            }
+
+                            currentView = sectionId;
+                        }
+
+                        function updateActiveNav(sectionId) {
+                            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                            const navItem = document.getElementById(`nav-${sectionId}`);
+                            if (navItem) {
+                                navItem.classList.add('active');
+                            }
+                        }
+
+                        // Scroll spy - update nav based on scroll position
+                        window.addEventListener('scroll', () => {
+                            const sections = document.querySelectorAll('.content-section');
+                            const scrollPos = window.scrollY + 150;
+
+                            sections.forEach(section => {
+                                const top = section.offsetTop;
+                                const height = section.offsetHeight;
+                                const id = section.getAttribute('id');
+
+                                if (scrollPos >= top && scrollPos < top + height) {
+                                    const sectionName = id.replace('section-', '');
+                                    updateActiveNav(sectionName);
+                                }
+                            });
+                        });
+
+                        function updateRecentJobsList(jobs) {
+                            const container = document.getElementById('recentJobsList');
+                            if (!container) return;
+
+                            if (!jobs || jobs.length === 0) {
+                                container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-secondary); font-size: 13px;">No jobs yet</div>';
+                                return;
+                            }
+
+                            const html = jobs.slice(0, 10).map(job => {
+                                const statusIcon = job.status === 'completed' || job.status === 'success' ? 'check-circle' :
+                                    (job.status === 'failed' || job.status === 'error' ? 'x-circle' :
+                                        (job.status === 'running' ? 'loader' : 'clock'));
+
+                                const timeAgo = getTimeAgo(job.created_at);
+
+                                return `
                     <div class="job-item-sidebar" onclick="showJobDetail('${job.id}')">
                         <div class="job-item-header">
                             <i data-lucide="${statusIcon}" style="width:14px; height:14px;"></i>
@@ -1154,241 +1624,396 @@
                         <div class="job-item-time">${timeAgo}</div>
                     </div>
                 `;
-                        }).join('');
+                            }).join('');
 
-                        container.innerHTML = html;
-                        lucide.createIcons();
-                    }
-
-                    function getTimeAgo(timestamp) {
-                        if (!timestamp) return 'Just now';
-                        const now = new Date();
-                        const then = new Date(timestamp);
-                        const seconds = Math.floor((now - then) / 1000);
-
-                        if (seconds < 60) return 'Just now';
-                        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-                        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-                        return `${Math.floor(seconds / 86400)}d ago`;
-                    }
-
-                    function showJobDetail(jobId) {
-                        // Switch to history view
-                        showView('history');
-
-                        // Expand the job if it exists
-                        const jobCard = document.getElementById(`job-${jobId}`);
-                        if (jobCard) {
-                            jobCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            const body = document.getElementById(`body-${jobId}`);
-                            const chevron = document.getElementById(`chevron-${jobId}`);
-                            if (body && !body.classList.contains('expanded')) {
-                                body.classList.add('expanded');
-                                chevron.classList.add('expanded');
-                            }
-                        }
-                    }
-
-                    // Copy logs to clipboard
-                    function copyLogsToClipboard() {
-                        const logsContainer = document.getElementById('systemLogsContent');
-                        const logsText = logsContainer.innerText;
-
-                        navigator.clipboard.writeText(logsText).then(() => {
-                            // Show success feedback
-                            const btn = event.target.closest('button');
-                            const originalHTML = btn.innerHTML;
-                            btn.innerHTML = '<i data-lucide="check"></i> Copied!';
+                            container.innerHTML = html;
                             lucide.createIcons();
+                        }
 
-                            setTimeout(() => {
-                                btn.innerHTML = originalHTML;
+                        function getTimeAgo(timestamp) {
+                            if (!timestamp) return 'Just now';
+                            const now = new Date();
+                            const then = new Date(timestamp);
+                            const seconds = Math.floor((now - then) / 1000);
+
+                            if (seconds < 60) return 'Just now';
+                            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+                            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+                            return `${Math.floor(seconds / 86400)}d ago`;
+                        }
+
+                        function showJobDetail(jobId) {
+                            // Switch to history view
+                            showView('history');
+
+                            // Expand the job if it exists
+                            const jobCard = document.getElementById(`job-${jobId}`);
+                            if (jobCard) {
+                                jobCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                const body = document.getElementById(`body-${jobId}`);
+                                const chevron = document.getElementById(`chevron-${jobId}`);
+                                if (body && !body.classList.contains('expanded')) {
+                                    body.classList.add('expanded');
+                                    chevron.classList.add('expanded');
+                                }
+                            }
+                        }
+
+                        // Copy logs to clipboard
+                        function copyLogsToClipboard() {
+                            const logsContainer = document.getElementById('systemLogsContent');
+                            const logsText = logsContainer.innerText;
+
+                            navigator.clipboard.writeText(logsText).then(() => {
+                                // Show success feedback
+                                const btn = event.target.closest('button');
+                                const originalHTML = btn.innerHTML;
+                                btn.innerHTML = '<i data-lucide="check"></i> Copied!';
                                 lucide.createIcons();
-                            }, 2000);
-                        }).catch(err => {
-                            alert('Failed to copy logs: ' + err);
-                        });
-                    }
 
-                    async function fetchSystemLogs() {
-                        const viewer = document.getElementById('systemLogsContent');
-                        if (!viewer) return;
-
-                        try {
-                            viewer.innerHTML = '<div style="padding: 20px; color: var(--text-secondary);">Loading logs...</div>';
-                            const result = await apiCall('/api/v1/system/logs?lines=200', 'GET');
-                            if (result.logs) {
-                                const logsHtml = result.logs.map(line => `<div>${line}</div>`).join('');
-                                viewer.innerHTML = logsHtml;
-                                viewer.scrollTop = viewer.scrollHeight;
-                            }
-                        } catch (e) {
-                            viewer.innerHTML = `<div style="padding: 20px; color: var(--error);">Error loading logs: ${e.message}</div>`;
-                        }
-                    }
-
-                    // ============================================
-                    // THEME MANAGEMENT
-                    // ============================================
-
-                    function toggleTheme() {
-                        const html = document.documentElement;
-                        const currentTheme = html.dataset.theme || 'dark';
-                        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-                        html.dataset.theme = newTheme;
-                        localStorage.setItem('theme', newTheme);
-
-                        document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Dark' : 'Light';
-                        document.getElementById('theme-icon').setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
-                        lucide.createIcons();
-                    }
-
-                    // Initialize theme from localStorage
-                    const savedTheme = localStorage.getItem('theme') || 'dark';
-                    document.documentElement.dataset.theme = savedTheme;
-                    document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Dark' : 'Light';
-
-                    // ============================================
-                    // TAB SWITCHING
-                    // ============================================
-
-                    function switchTab(tabName) {
-                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                        event.target.classList.add('active');
-                        document.getElementById(`tab-${tabName}`).classList.add('active');
-                    }
-
-                    // ============================================
-                    // FILE UPLOAD
-                    // ============================================
-
-                    async function handleFile(input) {
-                        const file = input.files[0];
-                        if (!file) return;
-
-                        const statusDiv = document.getElementById('upload-status');
-                        statusDiv.innerHTML = '<span style="color: var(--info)">Uploading...</span>';
-
-                        const formData = new FormData();
-                        formData.append('file', file);
-
-                        try {
-                            const response = await fetch(`${API_BASE}/api/v1/upload`, {
-                                method: 'POST',
-                                body: formData
+                                setTimeout(() => {
+                                    btn.innerHTML = originalHTML;
+                                    lucide.createIcons();
+                                }, 2000);
+                            }).catch(err => {
+                                alert('Failed to copy logs: ' + err);
                             });
-
-                            if (!response.ok) throw new Error('Upload failed');
-
-                            const result = await response.json();
-                            currentUploadPath = result.path;
-
-                            statusDiv.innerHTML = `<span style="color: var(--success)">✓ Uploaded: ${result.filename}</span>`;
-                        } catch (error) {
-                            statusDiv.innerHTML = `<span style="color: var(--error)">✗ Error: ${error.message}</span>`;
-                        }
-                    }
-
-                    // Drag & drop
-                    const dropZone = document.getElementById('dropZone');
-                    dropZone.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        dropZone.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                    });
-                    dropZone.addEventListener('dragleave', () => {
-                        dropZone.style.borderColor = '';
-                    });
-                    dropZone.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        dropZone.style.borderColor = '';
-                        const files = e.dataTransfer.files;
-                        if (files.length > 0) {
-                            document.getElementById('fileInput').files = files;
-                            handleFile(document.getElementById('fileInput'));
-                        }
-                    });
-
-                    // ============================================
-                    // API HELPER
-                    // ============================================
-
-                    async function apiCall(endpoint, method = 'GET', data = null) {
-                        const options = {
-                            method,
-                            headers: { 'Content-Type': 'application/json' }
-                        };
-
-                        if (data) {
-                            options.body = JSON.stringify(data);
                         }
 
-                        const response = await fetch(`${API_BASE}${endpoint}`, options);
+                        async function fetchSystemLogs() {
+                            const viewer = document.getElementById('systemLogsContent');
+                            if (!viewer) return;
 
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-
-                        return await response.json();
-                    }
-
-                    // ============================================
-                    // START MIGRATION
-                    // ============================================
-
-                    async function startMigration() {
-                        let inputPath;
-
-                        if (currentUploadPath) {
-                            inputPath = currentUploadPath;
-                        } else {
-                            inputPath = document.getElementById('inputPath').value.trim();
-                        }
-
-                        if (!inputPath) {
-                            alert('Please upload a file or enter a path');
-                            return;
-                        }
-
-                        const payload = {
-                            websphere_input: inputPath,
-                            liberty_output: document.getElementById('outputDir').value,
-                            max_iterations: parseInt(document.getElementById('maxIterations').value)
-                        };
-
-                        try {
-                            const result = await apiCall('/api/v1/orchestrate', 'POST', payload);
-
-                            if (result.job_id) {
-                                activeJobs.add(result.job_id);
-                                addJobToTimeline(result.job_id, 'started', new Date().toISOString());
-                                startPolling();
+                            try {
+                                viewer.innerHTML = '<div style="padding: 20px; color: var(--text-secondary);">Loading logs...</div>';
+                                const result = await apiCall('/api/v1/system/logs?lines=200', 'GET');
+                                if (result.logs) {
+                                    const logsHtml = result.logs.map(line => `<div>${line}</div>`).join('');
+                                    viewer.innerHTML = logsHtml;
+                                    viewer.scrollTop = viewer.scrollHeight;
+                                }
+                            } catch (e) {
+                                viewer.innerHTML = `<div style="padding: 20px; color: var(--error);">Error loading logs: ${e.message}</div>`;
                             }
-                        } catch (error) {
-                            alert('Failed to start migration: ' + error.message);
-                        }
-                    }
-
-                    // ============================================
-                    // JOB TIMELINE
-                    // ============================================
-
-                    function addJobToTimeline(jobId, status, timestamp) {
-                        const timeline = document.getElementById('timeline');
-
-                        // Remove empty state
-                        const emptyState = timeline.querySelector('.empty-state');
-                        if (emptyState) {
-                            emptyState.remove();
                         }
 
-                        const jobCard = document.createElement('div');
-                        jobCard.className = `job-card glass-panel status-${status}`;
-                        jobCard.id = `job-${jobId}`;
+                        // ============================================
+                        // THEME MANAGEMENT
+                        // ============================================
 
-                        jobCard.innerHTML = `
+                        function toggleTheme() {
+                            const html = document.documentElement;
+                            const currentTheme = html.dataset.theme || 'dark';
+                            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                            html.dataset.theme = newTheme;
+                            localStorage.setItem('theme', newTheme);
+
+                            document.getElementById('theme-text').textContent = newTheme === 'dark' ? 'Dark' : 'Light';
+                            document.getElementById('theme-icon').setAttribute('data-lucide', newTheme === 'dark' ? 'sun' : 'moon');
+                            lucide.createIcons();
+                        }
+
+                        // Initialize theme from localStorage
+                        const savedTheme = localStorage.getItem('theme') || 'dark';
+                        document.documentElement.dataset.theme = savedTheme;
+                        document.getElementById('theme-text').textContent = savedTheme === 'dark' ? 'Dark' : 'Light';
+
+                        // ============================================
+                        // TAB SWITCHING
+                        // ============================================
+
+                        function switchTab(tabName) {
+                            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                            event.target.classList.add('active');
+                            document.getElementById(`tab-${tabName}`).classList.add('active');
+                        }
+
+                        // ============================================
+                        // FILE UPLOAD
+                        // ============================================
+
+                        async function handleFile(input) {
+                            const file = input.files[0];
+                            if (!file) return;
+
+                            const statusDiv = document.getElementById('upload-status');
+                            statusDiv.innerHTML = '<span style="color: var(--info)">Uploading...</span>';
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                                const response = await fetch(`${API_BASE}/api/v1/upload`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+
+                                if (!response.ok) throw new Error('Upload failed');
+
+                                const result = await response.json();
+                                currentUploadPath = result.path;
+
+                                statusDiv.innerHTML = `<span style="color: var(--success)">✓ Uploaded: ${result.filename}</span>`;
+                            } catch (error) {
+                                statusDiv.innerHTML = `<span style="color: var(--error)">✗ Error: ${error.message}</span>`;
+                            }
+                        }
+
+                        // Drag & drop
+                        const dropZone = document.getElementById('dropZone');
+                        dropZone.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            dropZone.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                        });
+                        dropZone.addEventListener('dragleave', () => {
+                            dropZone.style.borderColor = '';
+                        });
+                        dropZone.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            dropZone.style.borderColor = '';
+                            const files = e.dataTransfer.files;
+                            if (files.length > 0) {
+                                document.getElementById('fileInput').files = files;
+                                handleFile(document.getElementById('fileInput'));
+                            }
+                        });
+
+                        // ============================================
+                        // API HELPER
+                        // ============================================
+
+                        async function apiCall(endpoint, method = 'GET', data = null) {
+                            const options = {
+                                method,
+                                headers: { 'Content-Type': 'application/json' }
+                            };
+
+                            if (data) {
+                                options.body = JSON.stringify(data);
+                            }
+
+                            const response = await fetch(`${API_BASE}${endpoint}`, options);
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            }
+
+                            return await response.json();
+                        }
+
+                        // ============================================
+                        // START MIGRATION
+                        // ============================================
+
+                        async function startMigration() {
+                            let inputPath;
+
+                            if (currentUploadPath) {
+                                inputPath = currentUploadPath;
+                            } else {
+                                inputPath = document.getElementById('inputPath').value.trim();
+                            }
+
+                            if (!inputPath) {
+                                alert('Please upload a file or enter a path');
+                                return;
+                            }
+
+                            const payload = {
+                                websphere_input: inputPath,
+                                liberty_output: document.getElementById('outputDir').value,
+                                max_iterations: parseInt(document.getElementById('maxIterations').value)
+                            };
+
+                            try {
+                                // Init Activity Banner
+                                const banner = document.getElementById('activity-banner');
+                                if (banner) {
+                                    banner.classList.remove('hidden');
+                                    banner.className = 'activity-banner status-running';
+                                    document.getElementById('banner-title').textContent = 'Migration Running';
+                                    document.getElementById('banner-subtitle').textContent = 'Initializing job...';
+
+                                    // Reset steps
+                                    document.querySelectorAll('.step').forEach(s => s.className = 'step');
+                                    document.querySelectorAll('.step-line').forEach(l => l.className = 'step-line');
+                                    document.getElementById('step-discovery').classList.add('active');
+
+                                    // Reset buttons
+                                    document.getElementById('btn-output').style.display = 'none';
+                                    document.getElementById('btn-stop').style.display = 'block';
+                                }
+
+                                const result = await apiCall('/api/v1/orchestrate', 'POST', payload);
+
+                                if (result.job_id) {
+                                    activeJobs.add(result.job_id);
+                                    addJobToTimeline(result.job_id, 'started', new Date().toISOString());
+
+                                    if (banner) {
+                                        document.getElementById('banner-subtitle').textContent = `Job #${result.job_id.substring(0, 8)} started`;
+                                    }
+
+                                    startPolling();
+                                }
+                            } catch (error) {
+                                const banner = document.getElementById('activity-banner');
+                                if (banner) {
+                                    banner.className = 'activity-banner status-error';
+                                    document.getElementById('banner-title').textContent = 'Migration Failed';
+                                    document.getElementById('banner-subtitle').textContent = error.message;
+                                    banner.querySelector('.spinner-ring').style.borderTopColor = 'var(--error)';
+                                    banner.querySelector('.spinner-ring').style.animation = 'none';
+                                }
+                                alert('Failed to start migration: ' + error.message);
+                            }
+                        }
+
+                        // Update Banner State based on Job
+                        function updateBannerState(job) {
+                            const banner = document.getElementById('activity-banner');
+                            if (!banner || banner.classList.contains('hidden')) return;
+
+                            // Update text
+                            document.getElementById('banner-subtitle').textContent = `Status: ${job.status} | Phase: ${job.current_phase || 'Unknown'}`;
+
+                            // Update Stepper
+                            const steps = [
+                                { id: 'discovery', label: 'Discovery' },
+                                { id: 'transform', label: 'Transform' },
+                                { id: 'verify', label: 'Verify' },
+                                { id: 'output', label: 'Output' }
+                            ];
+                            const currentPhase = (job.current_phase || '').toLowerCase();
+
+                            // Map current phase to active index
+                            let activeIndex = 0;
+                            if (currentPhase.includes('discovery')) activeIndex = 0;
+                            else if (currentPhase.includes('transform')) activeIndex = 1;
+                            else if (currentPhase.includes('validat') || currentPhase.includes('verify')) activeIndex = 2; // Verify
+                            else if (currentPhase.includes('output')) activeIndex = 3; // Output
+
+                            if (job.status === 'completed') activeIndex = 3; // All done
+
+                            const stepperHtml = steps.map((step, index) => {
+                                let status = 'pending';
+                                let icon = 'circle';
+
+                                // Determine Status (same logic)
+                                if (index < activeIndex) {
+                                    status = 'completed';
+                                    icon = 'check-circle';
+                                } else if (index === activeIndex) {
+                                    if (job.status === 'failed' || job.status === 'cancelled') {
+                                        status = 'failed';
+                                        icon = 'x-circle';
+                                    } else if (job.status === 'waiting_for_human') {
+                                        status = 'hitl';
+                                        icon = 'alert-circle';
+                                    } else if (job.status === 'completed') {
+                                        status = 'completed';
+                                        icon = 'check-circle';
+                                    } else {
+                                        status = 'active';
+                                        icon = 'loader';
+                                    }
+                                } else {
+                                    status = 'pending';
+                                    icon = 'circle';
+                                }
+
+                                // Force completed if job is done
+                                if (job.status === 'completed') {
+                                    status = 'completed';
+                                    icon = 'check-circle';
+                                }
+
+                                const isLast = index === steps.length - 1;
+                                const lineClass = (status === 'completed') ? 'step-line active' : ((status === 'failed' && index === activeIndex) ? 'step-line failed' : 'step-line');
+
+                                // Clickable Output
+                                const isOutput = step.id === 'output';
+                                const isClickable = isOutput && status === 'completed';
+                                const clickAttr = isClickable ? 'onclick="openOutput()"' : '';
+                                const cursorClass = isClickable ? 'cursor-pointer' : '';
+
+                                return `
+                                    <div class="step ${status} ${cursorClass}" id="step-${step.id}" ${clickAttr} ${isClickable ? 'title="Open Output Folder"' : ''}>
+                                        <i data-lucide="${icon}"></i>
+                                        <span>${step.label}</span>
+                                    </div>
+                                    ${!isLast ? `<div class="${lineClass}"></div>` : ''}
+                                `;
+                            }).join('');
+
+                            const stepperEl = banner.querySelector('.stepper');
+                            if (stepperEl) {
+                                stepperEl.innerHTML = stepperHtml;
+                                lucide.createIcons();
+                            }
+
+                            // Status Handling & Buttons
+                            const spinner = banner.querySelector('.spinner-ring');
+                            const btnStop = document.getElementById('btn-stop');
+                            const btnOutput = document.getElementById('btn-output');
+                            const btnApprove = document.getElementById('btn-hitl-approve');
+
+                            // Reset Controls
+                            btnStop.style.display = 'none';
+                            btnOutput.style.display = 'none';
+                            btnApprove.style.display = 'none';
+                            spinner.style.animation = 'none';
+
+                            if (job.status === 'running' || job.status === 'started' || job.status === 'pending') {
+                                banner.className = 'activity-banner status-running';
+                                document.getElementById('banner-title').textContent = 'Migration Running';
+                                spinner.style.animation = 'spin 1s linear infinite';
+                                spinner.style.borderTopColor = 'var(--info)';
+                                btnStop.style.display = 'block';
+                            } else if (job.status === 'completed') {
+                                banner.className = 'activity-banner status-success';
+                                document.getElementById('banner-title').textContent = 'Migration Completed';
+                                spinner.style.borderTopColor = 'var(--success)';
+                                btnOutput.style.display = 'flex';
+                            } else if (job.status === 'failed') {
+                                banner.className = 'activity-banner status-error';
+                                document.getElementById('banner-title').textContent = 'Migration Failed';
+                                spinner.style.borderTopColor = 'var(--error)';
+                            } else if (job.status === 'cancelled') {
+                                banner.className = 'activity-banner status-error';
+                                document.getElementById('banner-title').textContent = 'Migration Cancelled';
+                                spinner.style.borderTopColor = 'var(--text-secondary)';
+                            } else if (job.status === 'waiting_for_human') {
+                                banner.className = 'activity-banner status-hitl';
+                                document.getElementById('banner-title').textContent = 'Action Required';
+                                spinner.style.borderTopColor = 'var(--warning)';
+                                spinner.style.animation = 'spin 1s linear infinite';
+                                btnStop.style.display = 'block';
+                                btnApprove.style.display = 'flex';
+                            }
+                        }
+
+                        // ============================================
+                        // JOB TIMELINE
+                        // ============================================
+
+                        function addJobToTimeline(jobId, status, timestamp) {
+                            const timeline = document.getElementById('timeline');
+
+                            // Remove empty state
+                            const emptyState = timeline.querySelector('.empty-state');
+                            if (emptyState) {
+                                emptyState.remove();
+                            }
+
+                            const jobCard = document.createElement('div');
+                            jobCard.className = `job-card glass-panel status-${status}`;
+                            jobCard.id = `job-${jobId}`;
+
+                            jobCard.innerHTML = `
                 <div class="job-header" onclick="toggleJobBody('${jobId}')">
                     <div class="job-header-left">
                         <span class="job-id">Job #${jobId.substring(0, 8)}</span>
@@ -1407,133 +2032,134 @@
                 </div>
             `;
 
-                        timeline.insertBefore(jobCard, timeline.firstChild);
-                        lucide.createIcons();
-                    }
-
-                    function toggleJobBody(jobId) {
-                        const body = document.getElementById(`body-${jobId}`);
-                        const chevron = document.getElementById(`chevron-${jobId}`);
-
-                        body.classList.toggle('expanded');
-                        chevron.classList.toggle('expanded');
-                    }
-
-                    // ============================================
-                    // JOB POLLING & UPDATES
-                    // ============================================
-
-                    function startPolling() {
-                        if (!pollInterval) {
-                            pollInterval = setInterval(updateJobs, 2000);
+                            timeline.insertBefore(jobCard, timeline.firstChild);
+                            lucide.createIcons();
                         }
-                        updateJobs();
-                    }
 
-                    async function updateJobs() {
-                        try {
-                            const data = await apiCall('/api/v1/jobs');
-                            const jobIds = Object.keys(data.jobs || {});
+                        function toggleJobBody(jobId) {
+                            const body = document.getElementById(`body-${jobId}`);
+                            const chevron = document.getElementById(`chevron-${jobId}`);
 
-                            for (const jobId of jobIds) {
-                                if (activeJobs.has(jobId)) {
-                                    const job = await apiCall(`/api/v1/jobs/${jobId}`);
-                                    updateJobCard(jobId, job);
+                            body.classList.toggle('expanded');
+                            chevron.classList.toggle('expanded');
+                        }
 
-                                    if (job.status === 'completed' || job.status === 'failed' || job.status === 'cancelled') {
-                                        activeJobs.delete(jobId);
+                        // ============================================
+                        // JOB POLLING & UPDATES
+                        // ============================================
+
+                        function startPolling() {
+                            if (!pollInterval) {
+                                pollInterval = setInterval(updateJobs, 2000);
+                            }
+                            updateJobs();
+                        }
+
+                        async function updateJobs() {
+                            try {
+                                const data = await apiCall('/api/v1/jobs');
+                                const jobIds = Object.keys(data.jobs || {});
+
+                                for (const jobId of jobIds) {
+                                    if (activeJobs.has(jobId)) {
+                                        const job = await apiCall(`/api/v1/jobs/${jobId}`);
+                                        updateJobCard(jobId, job);
+                                        updateBannerState(job); // Update Actvity Banner
+
+                                        if (job.status === 'completed' || job.status === 'failed' || job.status === 'cancelled') {
+                                            activeJobs.delete(jobId);
+                                        }
                                     }
                                 }
+
+                                if (activeJobs.size === 0 && pollInterval) {
+                                    clearInterval(pollInterval);
+                                    pollInterval = null;
+                                }
+                            } catch (error) {
+                                console.error('Poll error:', error);
                             }
+                        }
 
-                            if (activeJobs.size === 0 && pollInterval) {
-                                clearInterval(pollInterval);
-                                pollInterval = null;
+                        function updateJobCard(jobId, job) {
+                            const card = document.getElementById(`job-${jobId}`);
+                            if (!card) return;
+
+                            // Update status
+                            card.className = `job-card glass-panel status-${job.status}`;
+                            const badge = card.querySelector('.status-badge');
+                            badge.className = `status-badge ${job.status}`;
+                            badge.textContent = job.status;
+
+                            // Update phases
+                            updatePhases(jobId, job);
+
+                            // Update logs
+                            updateLogs(jobId, job);
+
+                            // Update HITL panel
+                            if (job.status === 'waiting_for_human') {
+                                showHITLPanel(jobId, job);
                             }
-                        } catch (error) {
-                            console.error('Poll error:', error);
                         }
-                    }
 
-                    function updateJobCard(jobId, job) {
-                        const card = document.getElementById(`job-${jobId}`);
-                        if (!card) return;
+                        function updatePhases(jobId, job) {
+                            const phasesContainer = document.getElementById(`phases-${jobId}`);
+                            if (!phasesContainer) return;
 
-                        // Update status
-                        card.className = `job-card glass-panel status-${job.status}`;
-                        const badge = card.querySelector('.status-badge');
-                        badge.className = `status-badge ${job.status}`;
-                        badge.textContent = job.status;
+                            const phases = [
+                                { name: 'Discovery', status: 'completed' },
+                                { name: 'Transform', status: job.current_phase === 'transforming' ? 'active' : (job.current_phase === 'validating' || job.current_phase === 'output_ready' ? 'completed' : 'pending') },
+                                { name: 'Validate', status: job.current_phase === 'validating' ? 'active' : (job.current_phase === 'output_ready' ? 'completed' : 'pending') },
+                                { name: 'Output', status: job.current_phase === 'output_ready' ? 'completed' : 'pending' }
+                            ];
 
-                        // Update phases
-                        updatePhases(jobId, job);
-
-                        // Update logs
-                        updateLogs(jobId, job);
-
-                        // Update HITL panel
-                        if (job.status === 'waiting_for_human') {
-                            showHITLPanel(jobId, job);
-                        }
-                    }
-
-                    function updatePhases(jobId, job) {
-                        const phasesContainer = document.getElementById(`phases-${jobId}`);
-                        if (!phasesContainer) return;
-
-                        const phases = [
-                            { name: 'Discovery', status: 'completed' },
-                            { name: 'Transform', status: job.current_phase === 'transforming' ? 'active' : (job.current_phase === 'validating' || job.current_phase === 'output_ready' ? 'completed' : 'pending') },
-                            { name: 'Validate', status: job.current_phase === 'validating' ? 'active' : (job.current_phase === 'output_ready' ? 'completed' : 'pending') },
-                            { name: 'Output', status: job.current_phase === 'output_ready' ? 'completed' : 'pending' }
-                        ];
-
-                        phasesContainer.innerHTML = phases.map(phase => `
+                            phasesContainer.innerHTML = phases.map(phase => `
                 <div class="phase-pill ${phase.status}">
                     <i data-lucide="${phase.status === 'completed' ? 'check-circle' : (phase.status === 'active' ? 'loader' : 'circle')}"></i>
                     ${phase.name}
                 </div>
             `).join('');
 
-                        lucide.createIcons();
-                    }
+                            lucide.createIcons();
+                        }
 
-                    function updateLogs(jobId, job) {
-                        const logsContainer = document.getElementById(`logs-${jobId}`);
-                        if (!logsContainer || !job.progress_details) return;
+                        function updateLogs(jobId, job) {
+                            const logsContainer = document.getElementById(`logs-${jobId}`);
+                            if (!logsContainer || !job.progress_details) return;
 
-                        logsContainer.classList.add('visible');
+                            logsContainer.classList.add('visible');
 
-                        const logs = job.progress_details.slice(-20).map(event => {
-                            const time = new Date(event.timestamp).toLocaleTimeString();
-                            const type = event.type || '';
-                            const data = event.data || {};
+                            const logs = job.progress_details.slice(-20).map(event => {
+                                const time = new Date(event.timestamp).toLocaleTimeString();
+                                const type = event.type || '';
+                                const data = event.data || {};
 
-                            let message = '';
-                            if (type === 'discovery') {
-                                message = `Found ${data.file_count || 0} files`;
-                            } else if (type === 'transformation_done') {
-                                message = `✓ Transformed ${data.files_transformed || 0} files`;
-                            } else if (type === 'validation_done') {
-                                message = data.success ? '✓ Validation passed' : '✗ Validation failed';
-                            } else {
-                                message = type;
-                            }
+                                let message = '';
+                                if (type === 'discovery') {
+                                    message = `Found ${data.file_count || 0} files`;
+                                } else if (type === 'transformation_done') {
+                                    message = `✓ Transformed ${data.files_transformed || 0} files`;
+                                } else if (type === 'validation_done') {
+                                    message = data.success ? '✓ Validation passed' : '✗ Validation failed';
+                                } else {
+                                    message = type;
+                                }
 
-                            const logClass = message.includes('✓') ? 'success' : (message.includes('✗') ? 'error' : '');
+                                const logClass = message.includes('✓') ? 'success' : (message.includes('✗') ? 'error' : '');
 
-                            return `<div class="log-line ${logClass}"><span class="log-time">${time}</span>${message}</div>`;
-                        }).join('');
+                                return `<div class="log-line ${logClass}"><span class="log-time">${time}</span>${message}</div>`;
+                            }).join('');
 
-                        logsContainer.innerHTML = logs;
-                        logsContainer.scrollTop = logsContainer.scrollHeight;
-                    }
+                            logsContainer.innerHTML = logs;
+                            logsContainer.scrollTop = logsContainer.scrollHeight;
+                        }
 
-                    function showHITLPanel(jobId, job) {
-                        const hitlContainer = document.getElementById(`hitl-${jobId}`);
-                        if (!hitlContainer) return;
+                        function showHITLPanel(jobId, job) {
+                            const hitlContainer = document.getElementById(`hitl-${jobId}`);
+                            if (!hitlContainer) return;
 
-                        hitlContainer.innerHTML = `
+                            hitlContainer.innerHTML = `
                 <div class="hitl-panel glass-panel">
                     <div class="hitl-header">
                         <i data-lucide="alert-circle"></i>
@@ -1567,56 +2193,78 @@
                 </div>
             `;
 
-                        lucide.createIcons();
-                    }
-
-                    async function submitDecision(jobId, decision) {
-                        try {
-                            await apiCall(`/api/v1/jobs/${jobId}/decision`, 'POST', { decision });
-                            document.getElementById(`hitl-${jobId}`).innerHTML = '';
-                        } catch (error) {
-                            alert('Failed to submit decision: ' + error.message);
+                            lucide.createIcons();
                         }
-                    }
 
-                    // ============================================
-                    // INITIALIZE
-                    // ============================================
+                        async function submitDecision(jobId, decision) {
+                            try {
+                                await apiCall(`/api/v1/jobs/${jobId}/decision`, 'POST', { decision });
+                                document.getElementById(`hitl-${jobId}`).innerHTML = '';
+                            } catch (error) {
+                                alert('Failed to submit decision: ' + error.message);
+                            }
+                        }
 
-                    async function initialize() {
-                        try {
-                            const data = await apiCall('/api/v1/jobs');
-                            const jobIds = Object.keys(data.jobs || {}).sort((a, b) => {
-                                const tA = data.jobs[a].created_at ? new Date(data.jobs[a].created_at).getTime() : 0;
-                                const tB = data.jobs[b].created_at ? new Date(data.jobs[b].created_at).getTime() : 0;
-                                return tB - tA;
-                            }).slice(0, 10);
+                        // ============================================
+                        // INITIALIZE
+                        // ============================================
 
-                            for (const jobId of jobIds) {
-                                const job = data.jobs[jobId];
-                                addJobToTimeline(jobId, job.status, job.created_at);
+                        async function initialize() {
+                            try {
+                                const data = await apiCall('/api/v1/jobs');
+                                const jobIds = Object.keys(data.jobs || {}).sort((a, b) => {
+                                    const tA = data.jobs[a].created_at ? new Date(data.jobs[a].created_at).getTime() : 0;
+                                    const tB = data.jobs[b].created_at ? new Date(data.jobs[b].created_at).getTime() : 0;
+                                    return tB - tA;
+                                }); // .slice(0, 10); // Keep all for now or slice
 
-                                if (job.status === 'running' || job.status === 'started' || job.status === 'waiting_for_human') {
-                                    activeJobs.add(jobId);
+                                // Show banner for the latest job immediately
+                                if (jobIds.length > 0) {
+                                    const latestId = jobIds[0];
+                                    const latestJob = data.jobs[latestId];
+                                    // Fetch full details to ensure phases are correct
+                                    try {
+                                        const fullJob = await apiCall(`/api/v1/jobs/${latestId}`);
+
+                                        // Unhide banner explicitly
+                                        const banner = document.getElementById('activity-banner');
+                                        if (banner) {
+                                            banner.classList.remove('hidden');
+                                            // Ensure status classes are reset/set by updateBannerState
+                                        }
+
+                                        updateBannerState(fullJob);
+                                    } catch (e) {
+                                        console.log("Could not fetch details for banner init", e);
+                                    }
                                 }
+
+                                for (const jobId of jobIds) {
+                                    const job = data.jobs[jobId];
+                                    addJobToTimeline(jobId, job.status, job.created_at);
+
+                                    if (job.status === 'running' || job.status === 'started' || job.status === 'waiting_for_human') {
+                                        activeJobs.add(jobId);
+                                    }
+                                }
+
+                                if (activeJobs.size > 0) {
+                                    startPolling();
+                                }
+                            } catch (error) {
+                                console.error('Failed to load jobs:', error);
                             }
 
-                            if (activeJobs.size > 0) {
-                                startPolling();
-                            }
-                        } catch (error) {
-                            console.error('Failed to load jobs:', error);
+                            lucide.createIcons();
                         }
 
-                        lucide.createIcons();
-                    }
-
-                    // Start
-                    initialize();
-                </script>
-            </div>
+                        // Start
+                        initialize();
+                    </script>
+                </div>
+        </div>
         </main>
-    </div>
-</body>
+    </div> <!-- End app-body -->
+    </div> <!-- End app-container -->
 
 </html>
