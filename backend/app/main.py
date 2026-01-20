@@ -342,9 +342,6 @@ async def get_system_logs(lines: int = 100):
 async def health():
     return {"status": "healthy", "version": "2.0"}
 
-# Mount Frontend (Dashboard)
-app.mount("/", StaticFiles(directory=str(settings.FRONTEND_DIR), html=True), name="frontend")
-
 @app.get("/api/v1/jobs/{job_id}/download")
 async def download_job_output(job_id: str):
     """Download the migration output as a ZIP file"""
@@ -392,3 +389,6 @@ async def open_system_folder(req: dict):
     except Exception as e:
         # Don't fail hard, just return info
         return {"status": "failed", "message": "Could not open folder (running in container?)"}
+
+# Mount Frontend (Dashboard) - MUST BE LAST
+app.mount("/", StaticFiles(directory=str(settings.FRONTEND_DIR), html=True), name="frontend")
