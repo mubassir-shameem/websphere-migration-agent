@@ -1977,6 +1977,7 @@
                                 let icon = 'circle';
 
                                 // Determine Status (same logic)
+
                                 if (index < activeIndex) {
                                     status = 'completed';
                                     icon = 'check-circle';
@@ -1985,13 +1986,13 @@
                                         status = 'failed';
                                         icon = 'x-circle';
                                     } else if (job.status === 'waiting_for_human') {
-                                        status = 'hitl';
+                                        status = 'hitl active-pulse'; // Pulse on HITL
                                         icon = 'alert-circle';
                                     } else if (job.status === 'completed') {
                                         status = 'completed';
                                         icon = 'check-circle';
                                     } else {
-                                        status = 'active';
+                                        status = 'active active-pulse'; // Pulse on Running
                                         icon = 'loader';
                                     }
                                 } else {
@@ -2006,7 +2007,49 @@
                                 }
 
                                 const isLast = index === steps.length - 1;
-                                const lineClass = (status === 'completed') ? 'step-line active' : ((status === 'failed' && index === activeIndex) ? 'step-line failed' : 'step-line');
+
+                                // Line Logic: 
+                                // - If previous step is done and this is active -> Flow
+                                // - If this step is done -> Solid Active
+                                let lineClass = 'step-line';
+                                if (index < activeIndex) {
+                                    lineClass = 'step-line active'; // Solid Green
+                                } else if (index === activeIndex) {
+                                    // The line LEADING to this active step should flow
+                                    // (Wait, the line is rendered AFTER the step. So if index 0 is active, line 0 flows to index 1?)
+                                    // Actually, visual flow: Step 1 -> Line -> Step 2.
+                                    // If Step 1 is done and Step 2 is active, Line 1 should Flow.
+                                    // But here 'lineClass' is for the line AFTER the current step. 
+                                    // So if I am active, the line AFTER me is pending (gray).
+                                    // Ah, I need to look at PREVIOUS loop iteration? 
+                                    // No, let's keep it simple: Access logic based on Next Step?
+                                    // Visual: [Step 1] --(Line)-- [Step 2]
+                                    // If Step 1 is Active, Line is Gray.
+                                    // If Step 1 is Completed, Line is Green.
+                                    // If Step 2 is Active, Start Flowing Line 1? 
+                                    // Yes. But loop is on Step 1. so if (index < activeIndex) line is 'active'.
+                                    // if (index + 1 === activeIndex) line is 'active-flow'?
+                                    if (job.status !== 'failed' && job.status !== 'hitl') {
+                                        lineClass = 'step-line active-flow';
+                                    }
+                                }
+
+                                // Correction: The line is rendered AFTER the step.
+                                // If Step 0 (Discovery) is Complete, we render Line 0. 
+                                // If Step 1 (Transform) is Active, Line 0 should Flow.
+                                // So Line 0 logic depends on Step 1 status.
+                                // My loop is on 'step'. 'index' is current step.
+                                // If index < activeIndex - 1: Solid Green.
+                                // If index === activeIndex - 1: Flowing (Because next one is active).
+                                if (index < activeIndex - 1) {
+                                    lineClass = 'step-line active';
+                                } else if (index === activeIndex - 1) {
+                                    if (job.status === 'bg-processing' || job.status === 'running' || job.status === 'active') {
+                                        lineClass = 'step-line active-flow';
+                                    } else {
+                                        lineClass = 'step-line active';
+                                    }
+                                }
 
                                 // Clickable Output
                                 const isOutput = step.id === 'output';
