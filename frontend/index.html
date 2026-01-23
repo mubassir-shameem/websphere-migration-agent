@@ -577,6 +577,81 @@
             display: none;
         }
 
+
+        /* =========================================
+       PHASE 3b: Visual Enhancements (Animations)
+       ========================================= */
+
+        /* 1. Animated Flow Connector */
+        @keyframes flow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .step-line.active-flow {
+            background: linear-gradient(90deg, var(--border-panel) 0%, var(--primary) 50%, var(--border-panel) 100%);
+            background-size: 200% 100%;
+            animation: flow-animation 1.5s linear infinite;
+            height: 3px;
+            /* Slightly thicker for visibility */
+            border: none;
+            /* Remove default border to show gradient */
+        }
+
+        /* 2. Breathing Pulse for Active Step */
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(74, 144, 226, 0);
+                transform: scale(1.05);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 144, 226, 0);
+                transform: scale(1);
+            }
+        }
+
+        .step.active-pulse {
+            animation: pulse-glow 2s infinite;
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        /* 3. Error Flash for Logs */
+        @keyframes flash-red {
+            0% {
+                border-color: var(--border-panel);
+            }
+
+            50% {
+                border-color: var(--error);
+                box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+            }
+
+            100% {
+                border-color: var(--border-panel);
+            }
+        }
+
+        .glass-panel.flash-error {
+            animation: flash-red 1s ease-in-out 3;
+            /* Flash 3 times */
+        }
+
+        /* ========================================= */
+
         /* Running Blue */
         .activity-banner.status-running {
             border-left: 4px solid var(--info);
