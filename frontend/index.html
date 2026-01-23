@@ -1384,6 +1384,77 @@
             margin-bottom: 16px;
             opacity: 0.5;
         }
+
+        /* =========================================
+       PHASE 3b: Visual Enhancements (Animations)
+       MOVED TO BOTTOM FOR SPECIFICITY
+       ========================================= */
+
+        /* 1. Animated Flow Connector */
+        @keyframes flow-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .step-line.active-flow {
+            background: linear-gradient(90deg, var(--border-panel) 0%, var(--info) 50%, var(--border-panel) 100%) !important;
+            background-size: 200% 100%;
+            animation: flow-animation 1.5s linear infinite;
+            height: 3px;
+            border: none !important;
+        }
+
+        /* 2. Breathing Pulse for Active Step */
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+                transform: scale(1.05);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+                transform: scale(1);
+            }
+        }
+
+        .step.active-pulse {
+            animation: pulse-glow 2s infinite;
+            border-color: var(--info) !important;
+            color: var(--info) !important;
+            background: rgba(59, 130, 246, 0.1) !important;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        /* 3. Error Flash for Logs */
+        @keyframes flash-red {
+            0% {
+                border-color: var(--border-panel);
+            }
+
+            50% {
+                border-color: var(--error);
+                box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+            }
+
+            100% {
+                border-color: var(--border-panel);
+            }
+        }
+
+        .glass-panel.flash-error {
+            animation: flash-red 1s ease-in-out 3;
+        }
     </style>
 </head>
 
@@ -1896,6 +1967,33 @@
                             return await response.json();
                         }
 
+
+                        // ============================================
+                        // STOP MIGRATION
+                        // ============================================
+
+                        async function stopJob(jobId) {
+                            if (!confirm('Are you sure you want to stop this migration?')) return;
+
+                            try {
+                                const btnStop = document.getElementById('btn-stop');
+                                if (btnStop) btnStop.disabled = true;
+
+                                // Fix: Use the decision endpoint with 'abort' since there is no /cancel endpoint
+                                await apiCall(`/api/v1/jobs/${jobId}/decision`, 'POST', {
+                                    decision: 'abort',
+                                    feedback: 'Stopped by user'
+                                });
+
+                                // UI updates automatically via polling
+                                fetchJobs();
+                            } catch (e) {
+                                alert('Error stopping job: ' + e.message);
+                                const btnStop = document.getElementById('btn-stop');
+                                if (btnStop) btnStop.disabled = false;
+                            }
+                        }
+
                         // ============================================
                         // START MIGRATION
                         // ============================================
@@ -1936,7 +2034,10 @@
 
                                     // Reset buttons
                                     document.getElementById('btn-output').style.display = 'none';
-                                    document.getElementById('btn-stop').style.display = 'block';
+                                    const btnStop = document.getElementById('btn-stop');
+                                    btnStop.style.display = 'block';
+                                    // We don't have job ID yet, so temporary alert or disable
+                                    btnStop.onclick = () => alert('Job initializing...');
                                 }
 
                                 const result = await apiCall('/api/v1/orchestrate', 'POST', payload);
@@ -1947,6 +2048,9 @@
 
                                     if (banner) {
                                         document.getElementById('banner-subtitle').textContent = `Job #${result.job_id.substring(0, 8)} started`;
+                                        // Wire stop button now that we have ID
+                                        const btnStop = document.getElementById('btn-stop');
+                                        btnStop.onclick = () => stopJob(result.job_id);
                                     }
 
                                     startPolling();
@@ -2108,6 +2212,7 @@
                                 spinner.style.animation = 'spin 1s linear infinite';
                                 spinner.style.borderTopColor = 'var(--info)';
                                 btnStop.style.display = 'block';
+                                btnStop.onclick = () => stopJob(job.id);
                             } else if (job.status === 'completed') {
                                 banner.className = 'activity-banner status-success';
                                 document.getElementById('banner-title').textContent = 'Migration Completed';
@@ -2127,6 +2232,7 @@
                                 spinner.style.borderTopColor = 'var(--warning)';
                                 spinner.style.animation = 'spin 1s linear infinite';
                                 btnStop.style.display = 'block';
+                                btnStop.onclick = () => stopJob(job.id);
 
                                 // Render HITL Buttons
                                 if (hitlActions) {
