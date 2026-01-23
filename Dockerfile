@@ -1,6 +1,6 @@
-# Start with Official Python Base
+# Start with Official Python Base (Bookworm = Stable Debian 12)
 # We also need Java + Maven for the Agent to perform its job
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 # 1. Install System Dependencies (Java 17, Maven)
 # This implements our "Sustainable Validation" architecture
@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Environment
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH=$JAVA_HOME/bin:$PATH
+# Set Environment (Let Maven find Java via PATH)
+# ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+# ENV PATH=$JAVA_HOME/bin:$PATH
 
 # 2. Setup Python Environment
 WORKDIR /app

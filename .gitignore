@@ -6,15 +6,11 @@ __pycache__/
 venv/
 .env
 
-# Project specific
-logs/
+# Migration Agent Data
+data/*.db
 output/
-uploads/
-code-ref-samples/
-.DS_Store
+backend/backup-*
 
-# Portable Runtimes (Too large for git)
-apache-maven*/
-jdk-*/
-*.tar.gz
-docs/
+# IDE
+.vscode/
+.idea/
