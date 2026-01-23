@@ -1762,9 +1762,27 @@
                                 viewer.innerHTML = '<div style="padding: 20px; color: var(--text-secondary);">Loading logs...</div>';
                                 const result = await apiCall('/api/v1/system/logs?lines=200', 'GET');
                                 if (result.logs) {
-                                    const logsHtml = result.logs.map(line => `<div>${line}</div>`).join('');
+                                    // Highlight individual error lines
+                                    const logsHtml = result.logs.map(line => {
+                                        if (line.includes('ERROR') || line.includes('Exception') || line.includes('Failed')) {
+                                            return `<div style="color: var(--error); font-weight: 500; background: rgba(239, 68, 68, 0.1); padding: 2px 4px; border-radius: 4px;">${line}</div>`;
+                                        }
+                                        return `<div>${line}</div>`;
+                                    }).join('');
+
                                     viewer.innerHTML = logsHtml;
                                     viewer.scrollTop = viewer.scrollHeight;
+
+                                    // Smart Flash: If new errors found, flash the container
+                                    const fullText = result.logs.join(' ');
+                                    if (fullText.includes('ERROR') || fullText.includes('Exception')) {
+                                        const panel = viewer.closest('.glass-panel');
+                                        if (panel) {
+                                            panel.classList.remove('flash-error');
+                                            void panel.offsetWidth; // Trigger reflow to restart animation
+                                            panel.classList.add('flash-error');
+                                        }
+                                    }
                                 }
                             } catch (e) {
                                 viewer.innerHTML = `<div style="padding: 20px; color: var(--error);">Error loading logs: ${e.message}</div>`;
