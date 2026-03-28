@@ -63,3 +63,23 @@ While this agent efficiently handles raw syntactical transformations and standar
    - The agent struggles to autonomously resolve bindings between `ibm-ejb-jar-bnd.xml` physical names and Open Liberty `server.xml` endpoints (such as `jmsTopic` or `ConnectionFactory` references). You may need to manually resolve unmapped JNDI resources in the generated Liberty config.
 3. **Database & Lifecycle Bootstraps:**
    - Initialization servlets (e.g., table creation logic during `init()`) aren't safely sequenced. The agent doesn't guarantee `parentLast` EJB classloaders or database schema persistence boot configurations right out of the box.
+
+## Ideal Use Cases & Suitability
+
+### When to use this agent:
+- **Rapid Prototyping:** Quickly establishing a baseline for migrating a WebSphere profile to Open Liberty.
+- **Boilerplate Reduction:** Automating repetitive syntactical changes (e.g. converting `javax.ejb.Stateless` beans and standardizing EE 8 namespace imports).
+- **Baseline Configuration:** Scaffolding the initial `server.xml` and standard Java EE `pom.xml`.
+
+### What this agent will NOT do (Out of Scope):
+- **Zero-Touch Production Migrations:** It is an assistant, not a magic bullet. Complex monolithic architectures will require human engineering.
+- **Proprietary IBM APIs:** It does not gracefully handle migrations of WebSphere-specific proprietary APIs (like the WAS Scheduler, Distributed Maps/Caching, or custom WLM routing).
+- **Frontend Compilation:** The agent's focus is on Java backend and XML configuration. It does not touch or test static assets, JSPs, or JSF templates.
+- **Custom Build Scripts:** It creates a generic target `pom.xml`. It does not analyze your existing legacy Ant, Gradle, or complex multi-module Maven setups.
+
+### Required Manual Interventions (Day 2 Operations):
+Even for a successful agentic pass, a developer will systematically need to:
+1. **Frontend Testing:** Manually verify and adjust JSP compilations or migrate to modern UI frameworks.
+2. **Resource Binding:** Hardcode or inject environment-specific Database URLs, DataSources, and JMS Queues into the generated Liberty `server.xml`.
+3. **Dependency Resolution:** Inject missing proprietary libraries or specific transitive dependencies into the `pom.xml`.
+4. **Integration Testing:** Account for startup sequence differences, as Open Liberty's CDI container initializes differently from traditional WebSphere EJB containers.
