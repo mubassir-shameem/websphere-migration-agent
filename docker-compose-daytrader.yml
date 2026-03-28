@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  daytrader-legacy:
+    build:
+      context: ./sample_legacy/daytrader7
+      dockerfile: Dockerfile
+    container_name: daytrader-legacy
+    ports:
+      - "9082:9082"
+      - "9445:9443"
+    environment:
+      - WLP_LOGGING_MESSAGE_FORMAT=JSON
+      - WLP_LOGGING_MESSAGE_SOURCE=message,trace,accessLog,ffdc,audit
+    restart: unless-stopped

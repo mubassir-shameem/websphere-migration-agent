@@ -14,3 +14,31 @@ backend/backup-*
 # IDE
 .vscode/
 .idea/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Logs & Uploads
+logs/
+uploads/
+backend/logs/
+backend.backup-*/logs/
+backend.backup-*/sample_legacy/target/
+
+# Build artifacts / binaries
+apache-maven-3.9.6/
+apache-maven-3.9.9-bin.tar.gz
+jdk-17.0.9+9/
+
+# Sample legacy build output
+sample_legacy/daytrader7/target/
+
+
+# IDE
+.vscode/
+.idea/
+
+# Nested git repos (treat as reference material, not submodules)
+code-ref-samples/
+sample_legacy/daytrader7/
