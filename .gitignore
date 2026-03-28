@@ -7,9 +7,14 @@ venv/
 .env
 
 # Migration Agent Data
-data/*.db
+data/
 output/
 backend/backup-*
+
+# Reference / Sample Apps / Docs
+docs/
+code-ref-samples/
+sample_legacy/
 
 # IDE
 .vscode/
