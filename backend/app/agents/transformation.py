@@ -49,31 +49,27 @@ class TransformationAgent:
         try:
             if provider == "claude" and self.claude_client:
                 self.logger.info('Calling Claude API (claude-sonnet-4-5)')
-                self.logger.info("DEBUG: Starting Claude API call...")
                 try:
                     response = self.claude_client.messages.create(
                         model="claude-sonnet-4-5",
                         max_tokens=4000,
                         messages=[{"role": "user", "content": prompt}]
                     )
-                    self.logger.info(f"DEBUG: Claude API returned: {type(response)}")
                     return response.content[0].text.strip()
                 except Exception as e:
                     import traceback
-                    self.logger.error(f"DEBUG: Claude API Error: {e}")
+                    self.logger.error(f"Claude API Error: {e}")
                     self.logger.error(traceback.format_exc())
                     raise e
             
             elif provider == "openai" and self.openai_client:
                 self.logger.info('Calling OpenAI API')
-                self.logger.info("DEBUG: Starting OpenAI API call...")
                 response = self.openai_client.chat.completions.create(
                     model="gpt-4",
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=4000,
                     temperature=0.1
                 )
-                self.logger.info("DEBUG: OpenAI API returned result")
                 return response.choices[0].message.content.strip()
             
             else:
@@ -83,7 +79,6 @@ class TransformationAgent:
                  
         except Exception as e:
             self.logger.error(f"LLM API error ({provider}): {e}")
-            self.logger.error(f"DEBUG: General LLM Error: {e}")
             return None
 
     def transform_code(self, source_path, filename, llm_provider="claude", validation_feedback=None):
@@ -108,7 +103,6 @@ class TransformationAgent:
         result = self.call_llm(prompt, llm_provider)
         
         if result:
-            # simple cleanup
             cleaned = result.replace("```java", "").replace("```xml", "").replace("```", "").strip()
             return {'status': 'success', 'transformed_code': cleaned}
         else:
@@ -126,7 +120,7 @@ class TransformationAgent:
             'new_files': []
         }
         
-        # 1. Transform Source Files
+        # Transform Source Files
         for filename, filepath in source_files.items():
             self.logger.info(f"Processing {filename}")
             res = self.transform_code(filepath, filename, llm_provider, validation_feedback)
@@ -152,7 +146,7 @@ class TransformationAgent:
             
             results['files_transformed'][filename] = res
 
-        # 2. Generate POM if not present/transformed (usually generated fresh)
+        # Generate POM if not present/transformed
         pom_content = self.generate_pom(llm_provider)
         if pom_content:
             pom_path = os.path.join(self.output_dir, 'pom.xml')
@@ -160,7 +154,7 @@ class TransformationAgent:
                 f.write(pom_content)
             results['new_files'].append(pom_path)
         
-        # 3. Generate server.xml for Open Liberty
+        # Generate server.xml for Open Liberty
         server_xml_content = self._generate_server_xml()
         if server_xml_content:
             server_xml_path = os.path.join(self.output_dir, 'src/main/liberty/config/server.xml')

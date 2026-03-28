@@ -94,7 +94,6 @@
             transition: width 0.3s ease;
             overflow-y: auto;
             overflow-x: hidden;
-            /* Revert to theme background as requested */
             background: var(--bg-surface);
             border-right: 1px solid var(--border-panel);
             display: flex;
@@ -104,8 +103,6 @@
         .sidebar.collapsed {
             width: 70px;
         }
-
-        /* Sidebar header removed for HubSpot layout */
 
         .sidebar-toggle {
             background: transparent;
@@ -155,7 +152,6 @@
             background: transparent;
             width: 100%;
             margin-bottom: 20px;
-            /* Increased spacing as requested */
             text-align: left;
             position: relative;
         }
@@ -410,14 +406,12 @@
 
         .source-toggle {
             display: flex;
-            /* Fix for Dark Mode visibility */
             background: var(--bg-surface-secondary, rgba(255, 255, 255, 0.05));
             border: 1px solid var(--border-panel);
             padding: 2px;
             border-radius: 8px;
             gap: 2px;
             height: 40px;
-            /* Enforce alignment */
             align-items: center;
             box-sizing: border-box;
         }
@@ -427,7 +421,6 @@
             background: transparent;
             padding: 0 12px;
             height: 100%;
-            /* Full height of container */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -448,7 +441,6 @@
         .mini-drop-zone {
             flex: 1;
             height: 40px;
-            /* Enforce alignment */
             border: 1px dashed var(--border-panel);
             border-radius: 8px;
             display: flex;
@@ -594,7 +586,6 @@
             flex-direction: column;
             justify-content: center;
             min-width: 0;
-            /* Text truncation fix */
             gap: 8px;
         }
 
@@ -667,10 +658,10 @@
 
 
         /* =========================================
-       PHASE 3b: Visual Enhancements (Animations)
-       ========================================= */
+           Visual Enhancements (Animations)
+           ========================================= */
 
-        /* 1. Animated Flow Connector */
+        /* Animated Flow Connector */
         @keyframes flow-animation {
             0% {
                 background-position: 0% 50%;
@@ -686,12 +677,10 @@
             background-size: 200% 100%;
             animation: flow-animation 1.5s linear infinite;
             height: 3px;
-            /* Slightly thicker for visibility */
             border: none;
-            /* Remove default border to show gradient */
         }
 
-        /* 2. Breathing Pulse for Active Step */
+        /* Breathing Pulse for Active Step */
         @keyframes pulse-glow {
             0% {
                 box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4);
@@ -717,7 +706,7 @@
             z-index: 2;
         }
 
-        /* 3. Error Flash for Logs */
+        /* Error Flash for Logs */
         @keyframes flash-red {
             0% {
                 border-color: var(--border-panel);
@@ -735,7 +724,6 @@
 
         .glass-panel.flash-error {
             animation: flash-red 1s ease-in-out 3;
-            /* Flash 3 times */
         }
 
         /* ========================================= */
