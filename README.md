@@ -83,3 +83,13 @@ Even for a successful agentic pass, a developer will systematically need to:
 2. **Resource Binding:** Hardcode or inject environment-specific Database URLs, DataSources, and JMS Queues into the generated Liberty `server.xml`.
 3. **Dependency Resolution:** Inject missing proprietary libraries or specific transitive dependencies into the `pom.xml`.
 4. **Integration Testing:** Account for startup sequence differences, as Open Liberty's CDI container initializes differently from traditional WebSphere EJB containers.
+
+---
+
+## Disclaimer & Liability
+
+This framework is an experimental proof-of-concept designed strictly for research and evaluation purposes. It is **not** a production-ready software product and should not be executed "as-is" against mission-critical, production, or classified systems.
+
+By using this repository, you acknowledge that migrating legacy enterprise applications carries inherent risks, including data loss, security vulnerability exposure, and system instability. The authors and contributors of this project assume no liability for damages, system failures, or business interruptions resulting from the use of this code. 
+
+All generated configurations, transformed Java code, and automated architecture decisions must be subjected to rigorous human engineering review, security auditing, and comprehensive integration testing before any deployment to a live environment.
