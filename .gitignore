@@ -47,3 +47,4 @@ sample_legacy/daytrader7/target/
 # Nested git repos (treat as reference material, not submodules)
 code-ref-samples/
 sample_legacy/daytrader7/
+architecture-v2/
